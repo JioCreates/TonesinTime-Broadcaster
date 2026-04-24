@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.app
+.DS_Store
+cloud/server/data/
+cloud/server/uploads/
+build/
+.env
+.claude/

@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: tonesintime-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    networks:
+      - tonesintime
+    restart: unless-stopped
+    depends_on:
+      - icecast-base
+
+  icecast-base:
+    build:
+      context: ./icecast
+      dockerfile: Dockerfile
+    image: tonesintime/icecast:latest
+    container_name: tonesintime-icecast-base
+    environment:
+      - ICECAST_SOURCE_PASSWORD=${ICECAST_SOURCE_PASSWORD:-changeme}
+      - ICECAST_RELAY_PASSWORD=${ICECAST_RELAY_PASSWORD:-changeme}
+      - ICECAST_ADMIN_PASSWORD=${ICECAST_ADMIN_PASSWORD:-admin}
+      - ICECAST_ADMIN_USER=${ICECAST_ADMIN_USER:-admin}
+      - ICECAST_PORT=8000
+      - ICECAST_MOUNT=/live
+      - ICECAST_MAX_LISTENERS=100
+      - ICECAST_HOSTNAME=localhost
+    ports:
+      - "8000:8000"
+    networks:
+      - tonesintime
+    restart: unless-stopped
+
+networks:
+  tonesintime:
+    name: tonesintime
+    driver: bridge

@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TonesinTime Cloud</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --accent: #7c5bf5;
+      --accent-hover: #9172ff;
+      --danger: #f54e5e;
+      --danger-hover: #ff6b78;
+      --success: #34d399;
+      --warning: #facc15;
+      --text: #f0f0f5;
+      --text-muted: rgba(240, 240, 245, 0.5);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 20%, rgba(124, 91, 245, 0.12) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgShift 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgShift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-5%, -3%); }
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      margin-bottom: 8px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo span {
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .user-badge {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+    }
+
+    /* Glass Card */
+    .glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      box-shadow: var(--glass-shadow);
+    }
+
+    /* Buttons */
+    button, .btn {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: rgba(245, 78, 94, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(245, 78, 94, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: rgba(245, 78, 94, 0.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid var(--glass-border);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-success {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+    }
+
+    .btn-success:hover {
+      background: rgba(52, 211, 153, 0.25);
+    }
+
+    .btn-sm {
+      font-size: 12px;
+      padding: 6px 14px;
+    }
+
+    .btn-xs {
+      font-size: 11px;
+      padding: 4px 10px;
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 4px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Forms */
+    .auth-container {
+      max-width: 400px;
+      margin: 80px auto;
+      padding: 40px;
+    }
+
+    .auth-container h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .auth-container p {
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="time"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.4)' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    select option {
+      background: #1a1a2e;
+      color: var(--text);
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    .form-actions {
+      margin-top: 24px;
+    }
+
+    .form-actions button {
+      width: 100%;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .form-toggle {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .form-toggle a {
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .form-toggle a:hover {
+      color: var(--accent-hover);
+    }
+
+    .error-msg {
+      background: rgba(245, 78, 94, 0.1);
+      border: 1px solid rgba(245, 78, 94, 0.2);
+      color: var(--danger);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    /* Dashboard */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .dashboard-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .streams-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    /* Stream Card */
+    .stream-card {
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .stream-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .stream-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .stream-name {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .stream-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-running .status-dot {
+      background: var(--success);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    }
+
+    .status-running {
+      color: var(--success);
+    }
+
+    .status-stopped .status-dot {
+      background: var(--text-muted);
+    }
+
+    .status-stopped {
+      color: var(--text-muted);
+    }
+
+    .stream-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .info-item {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .info-item.full {
+      grid-column: 1 / -1;
+    }
+
+    .info-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-size: 13px;
+      font-family: 'SF Mono', SFMono-Regular, Menlo, monospace;
+      word-break: break-all;
+      color: var(--text);
+      user-select: all;
+    }
+
+    .stream-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .listener-count {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .listener-count strong {
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      width: 90%;
+      max-width: 440px;
+      padding: 32px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal h3 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .modal .form-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal .form-actions button {
+      flex: 1;
+    }
+
+    /* Loading */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-overlay {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    .loading-overlay .spinner {
+      margin: 0 auto 12px;
+      width: 28px;
+      height: 28px;
+    }
+
+    /* Plan badge */
+    .plan-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: rgba(124, 91, 245, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(124, 91, 245, 0.3);
+    }
+
+    .plan-badge.pro {
+      background: rgba(250, 204, 21, 0.15);
+      color: #facc15;
+      border-color: rgba(250, 204, 21, 0.3);
+    }
+
+    /* Upload drop zone */
+    .drop-zone {
+      border: 2px dashed var(--glass-border);
+      border-radius: var(--radius);
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 24px;
+    }
+
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--accent);
+      background: rgba(124, 91, 245, 0.05);
+    }
+
+    .drop-zone h3 {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .drop-zone p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .drop-zone input[type="file"] {
+      display: none;
+    }
+
+    /* Track list */
+    .track-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .track-item:hover {
+      border-color: var(--glass-border);
+    }
+
+    .track-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .track-title {
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-artist {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .track-duration {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'SF Mono', monospace;
+      flex-shrink: 0;
+    }
+
+    .track-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Playlist items */
+    .playlist-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .playlist-item:hover {
+      border-color: var(--glass-border);
+    }
+
+    .playlist-name {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .playlist-count {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Schedule grid */
+    .schedule-week {
+      display: grid;
+      grid-template-columns: 80px repeat(24, 1fr);
+      gap: 2px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .schedule-day-label {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 4px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    .schedule-hour {
+      height: 36px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .schedule-block {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      background: rgba(124, 91, 245, 0.4);
+      border: 1px solid rgba(124, 91, 245, 0.6);
+      border-radius: 3px;
+      font-size: 9px;
+      padding: 2px 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .schedule-block.disabled {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      opacity: 0.5;
+    }
+
+    .schedule-hour-header {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 4px 0;
+    }
+
+    /* Schedule list */
+    .schedule-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      border: 1px solid transparent;
+    }
+
+    .schedule-item:hover {
+      border-color: var(--glass-border);
+    }
+
+    .schedule-info {
+      flex: 1;
+    }
+
+    .schedule-info .primary {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .schedule-info .secondary {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      display: none;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-slider::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+    }
+
+    .toggle input:checked + .toggle-slider {
+      background: var(--accent);
+    }
+
+    .toggle input:checked + .toggle-slider::after {
+      transform: translateX(20px);
+    }
+
+    /* History table */
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .history-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .history-table td {
+      padding: 10px 12px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .history-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Widget preview */
+    .widget-preview {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .embed-code {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: 'SF Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      word-break: break-all;
+      user-select: all;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .embed-code:hover::after {
+      content: 'Click to copy';
+      position: absolute;
+      top: -28px;
+      right: 0;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: -apple-system, sans-serif;
+    }
+
+    /* Upload progress */
+    .upload-progress {
+      margin-top: 16px;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.3s;
+      width: 0%;
+    }
+
+    .progress-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Playlist detail view */
+    .playlist-detail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .playlist-detail-header h3 {
+      font-size: 18px;
+      flex: 1;
+    }
+
+    .back-btn {
+      font-size: 13px;
+      padding: 6px 12px;
+    }
+
+    /* Reorder buttons */
+    .reorder-btn {
+      font-size: 14px;
+      padding: 2px 8px;
+      line-height: 1;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+    }
+
+    .reorder-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .stream-info { grid-template-columns: 1fr; }
+      .container { padding: 16px; }
+      .auth-container { margin: 40px auto; padding: 24px; }
+      .tab-nav { gap: 2px; }
+      .tab-btn { padding: 8px 14px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUTH VIEW -->
+  <div id="auth-view" class="container" style="display:none;">
+    <div class="auth-container glass">
+      <h2 id="auth-title">Sign In</h2>
+      <p id="auth-subtitle">Stream to the world with TonesinTime Cloud</p>
+
+      <div id="auth-error" class="error-msg"></div>
+
+      <form id="auth-form" onsubmit="return false;">
+        <div id="username-group" class="form-group" style="display:none;">
+          <label>Username</label>
+          <input type="text" id="auth-username" placeholder="your-dj-name" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="auth-password" placeholder="Min 8 characters" autocomplete="current-password">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" id="auth-submit">Sign In</button>
+        </div>
+      </form>
+
+      <div class="form-toggle">
+        <span id="auth-toggle-text">Don't have an account?</span>
+        <a id="auth-toggle" onclick="toggleAuthMode()">Create one</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="dashboard-view" class="container" style="display:none;">
+    <header>
+      <div class="logo">TonesinTime <span>Cloud</span></div>
+      <div class="header-actions">
+        <span class="user-badge" id="user-info"></span>
+        <button class="btn-ghost btn-sm" onclick="logout()">Sign Out</button>
+      </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('streams')">Streams</button>
+      <button class="tab-btn" onclick="switchTab('tracks')">Tracks</button>
+      <button class="tab-btn" onclick="switchTab('playlists')">Playlists</button>
+      <button class="tab-btn" onclick="switchTab('schedule')">Schedule</button>
+      <button class="tab-btn" onclick="switchTab('history')">History</button>
+      <button class="tab-btn" onclick="switchTab('widget')">Widget</button>
+    </div>
+
+    <!-- STREAMS TAB -->
+    <div id="tab-streams" class="tab-content active">
+      <div class="dashboard-header">
+        <h2>Your Streams</h2>
+        <button class="btn-primary" onclick="openCreateModal()">+ New Stream</button>
+      </div>
+      <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <div>Loading streams...</div>
+      </div>
+      <div id="streams-container" class="streams-grid"></div>
+    </div>
+
+    <!-- TRACKS TAB -->
+    <div id="tab-tracks" class="tab-content">
+      <div class="dashboard-header">
+        <h2>Track Library</h2>
+      </div>
+
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <h3>Upload MP3 Files</h3>
+        <p>Drag and drop audio files here, or click to browse</p>
+        <input type="file" id="file-input" accept=".mp3,.m4a,.ogg,.flac,.wav" multiple>
+      </div>
+
+      <div class="upload-progress" id="upload-progress">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-text" id="progress-text">Uploading...</div>
+      </div>
+
+      <div id="tracks-container" class="track-list"></div>
+    </div>
+
+    <!-- PLAYLISTS TAB -->
+    <div id="tab-playlists" class="tab-content">
+      <div id="playlists-list-view">
+        <div class="dashboard-header">
+          <h2>Playlists</h2>
+          <button class="btn-primary" onclick="openPlaylistModal()">+ New Playlist</button>
+        </div>
+        <div id="playlists-container"></div>
+      </div>
+
+      <div id="playlist-detail-view" style="display:none;">
+        <div class="playlist-detail-header">
+          <button class="btn-ghost back-btn" onclick="closePlaylistDetail()">Back</button>
+          <h3 id="playlist-detail-name"></h3>
+          <button class="btn-ghost btn-sm" onclick="openAddTrackModal()">+ Add Track</button>
+        </div>
+        <div id="playlist-tracks-container" class="track-list"></div>
+      </div>
+    </div>
+
+    <!-- SCHEDULE TAB -->
+    <div id="tab-schedule" class="tab-content">
+      <div class="dashboard-header">
+        <h2>Schedule</h2>
+        <button class="btn-primary" onclick="openScheduleModal()">+ New Schedule</button>
+      </div>
+
+      <!-- Visual timeline -->
+      <div class="glass" style="padding: 20px; margin-bottom: 24px; overflow-x: auto;">
+        <div id="schedule-timeline"></div>
+      </div>
+
+      <div id="schedules-container"></div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="tab-history" class="tab-content">
+      <div class="dashboard-header">
+        <h2>Play History</h2>
+        <div>
+          <select id="history-stream-select" onchange="loadHistory()" style="width: auto; display: inline-block;">
+            <option value="">Select a stream</option>
+          </select>
+        </div>
+      </div>
+      <div class="glass" style="padding: 0; overflow: hidden;">
+        <table class="history-table">
+          <thead>
+            <tr><th>Track</th><th>Artist</th><th>Played At</th></tr>
+          </thead>
+          <tbody id="history-tbody"></tbody>
+        </table>
+      </div>
+      <div id="history-pagination" style="margin-top: 16px; text-align: center;"></div>
+    </div>
+
+    <!-- WIDGET TAB -->
+    <div id="tab-widget" class="tab-content">
+      <div class="dashboard-header">
+        <h2>Web Player Widget</h2>
+      </div>
+
+      <div class="form-group">
+        <label>Select Stream</label>
+        <select id="widget-stream-select" onchange="updateWidgetPreview()">
+          <option value="">Select a stream</option>
+        </select>
+      </div>
+
+      <div id="widget-output" style="display: none;">
+        <h3 style="font-size: 15px; margin-bottom: 12px;">Embed Code</h3>
+        <div class="embed-code" id="embed-code" onclick="copyEmbedCode()"></div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Click the code above to copy to clipboard</p>
+
+        <h3 style="font-size: 15px; margin: 24px 0 12px;">Preview</h3>
+        <div class="widget-preview">
+          <iframe id="widget-iframe" style="border: none; width: 100%; height: 140px; border-radius: 16px;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE STREAM MODAL -->
+  <div class="modal-overlay" id="create-modal">
+    <div class="modal glass">
+      <h3>Create New Stream</h3>
+      <div id="create-error" class="error-msg"></div>
+      <div class="form-group">
+        <label>Stream Name</label>
+        <input type="text" id="stream-name" placeholder="My Awesome Stream">
+      </div>
+      <div class="form-group">
+        <label>Mount Point</label>
+        <input type="text" id="stream-mount" placeholder="/live" value="/live">
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closeCreateModal()">Cancel</button>
+        <button class="btn-primary" id="create-btn" onclick="createStream()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE PLAYLIST MODAL -->
+  <div class="modal-overlay" id="playlist-modal">
+    <div class="modal glass">
+      <h3>Create Playlist</h3>
+      <div id="playlist-error" class="error-msg"></div>
+      <div class="form-group">
+        <label>Playlist Name</label>
+        <input type="text" id="playlist-name-input" placeholder="My Playlist">
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closePlaylistModal()">Cancel</button>
+        <button class="btn-primary" onclick="createPlaylist()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD TRACK TO PLAYLIST MODAL -->
+  <div class="modal-overlay" id="add-track-modal">
+    <div class="modal glass">
+      <h3>Add Track to Playlist</h3>
+      <div id="add-track-list" class="track-list" style="max-height: 400px; overflow-y: auto;"></div>
+      <div class="form-actions" style="margin-top: 16px;">
+        <button class="btn-ghost" onclick="closeAddTrackModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE SCHEDULE MODAL -->
+  <div class="modal-overlay" id="schedule-modal">
+    <div class="modal glass">
+      <h3>Create Schedule</h3>
+      <div id="schedule-error" class="error-msg"></div>
+      <div class="form-group">
+        <label>Stream</label>
+        <select id="schedule-stream"></select>
+      </div>
+      <div class="form-group">
+        <label>Playlist</label>
+        <select id="schedule-playlist"></select>
+      </div>
+      <div class="form-group">
+        <label>Day of Week</label>
+        <select id="schedule-day">
+          <option value="0">Sunday</option>
+          <option value="1">Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 12px;">
+        <div class="form-group" style="flex: 1;">
+          <label>Start Time</label>
+          <input type="time" id="schedule-start">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>End Time</label>
+          <input type="time" id="schedule-end">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closeScheduleModal()">Cancel</button>
+        <button class="btn-primary" onclick="createSchedule()">Create</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API = window.location.origin + '/api';
+let token = localStorage.getItem('tonesintime_token');
+let user = null;
+let isRegister = false;
+
+// Cached data
+let cachedStreams = [];
+let cachedTracks = [];
+let cachedPlaylists = [];
+let currentPlaylistId = null;
+let historyPage = 1;
+
+// -----------------------------------------------------------------------
+// Init
+// -----------------------------------------------------------------------
+function init() {
+  if (token) {
+    try {
+      user = JSON.parse(atob(token.split('.')[1]));
+      showDashboard();
+    } catch {
+      logout();
+    }
+  } else {
+    showAuth();
+  }
+}
+
+// -----------------------------------------------------------------------
+// Tab Navigation
+// -----------------------------------------------------------------------
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  document.getElementById('tab-' + tabName).classList.add('active');
+  event.target.classList.add('active');
+
+  // Load data for tab
+  switch (tabName) {
+    case 'streams': loadStreams(); break;
+    case 'tracks': loadTracks(); break;
+    case 'playlists': loadPlaylists(); break;
+    case 'schedule': loadSchedules(); break;
+    case 'history': populateHistoryStreamSelect(); break;
+    case 'widget': populateWidgetStreamSelect(); break;
+  }
+}
+
+// -----------------------------------------------------------------------
+// Auth
+// -----------------------------------------------------------------------
+function showAuth() {
+  document.getElementById('auth-view').style.display = 'block';
+  document.getElementById('dashboard-view').style.display = 'none';
+}
+
+function showDashboard() {
+  document.getElementById('auth-view').style.display = 'none';
+  document.getElementById('dashboard-view').style.display = 'block';
+  document.getElementById('user-info').textContent = user.username + ' (' + (user.plan || 'free') + ')';
+  loadStreams();
+}
+
+function toggleAuthMode() {
+  isRegister = !isRegister;
+  document.getElementById('auth-title').textContent = isRegister ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-subtitle').textContent = isRegister
+    ? 'Start streaming in minutes'
+    : 'Stream to the world with TonesinTime Cloud';
+  document.getElementById('username-group').style.display = isRegister ? 'block' : 'none';
+  document.getElementById('auth-submit').textContent = isRegister ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-toggle-text').textContent = isRegister ? 'Already have an account?' : "Don't have an account?";
+  document.getElementById('auth-toggle').textContent = isRegister ? 'Sign in' : 'Create one';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+document.getElementById('auth-form').addEventListener('submit', async () => {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const username = document.getElementById('auth-username').value.trim();
+  const errEl = document.getElementById('auth-error');
+  const btn = document.getElementById('auth-submit');
+
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = isRegister ? 'Creating...' : 'Signing in...';
+
+  try {
+    const endpoint = isRegister ? '/auth/register' : '/auth/login';
+    const body = isRegister ? { email, password, username } : { email, password };
+
+    const res = await fetch(API + endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Request failed');
+    }
+
+    token = data.token;
+    user = data.user;
+    localStorage.setItem('tonesintime_token', token);
+    showDashboard();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = isRegister ? 'Create Account' : 'Sign In';
+  }
+});
+
+function logout() {
+  token = null;
+  user = null;
+  localStorage.removeItem('tonesintime_token');
+  showAuth();
+}
+
+// -----------------------------------------------------------------------
+// API helper
+// -----------------------------------------------------------------------
+async function apiFetch(path, options = {}) {
+  const headers = {
+    Authorization: 'Bearer ' + token,
+    ...(options.headers || {}),
+  };
+  // Don't set Content-Type for FormData
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  const res = await fetch(API + path, { ...options, headers });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// -----------------------------------------------------------------------
+// Streams
+// -----------------------------------------------------------------------
+async function loadStreams() {
+  const container = document.getElementById('streams-container');
+  const loading = document.getElementById('loading');
+
+  loading.style.display = 'block';
+  container.innerHTML = '';
+
+  try {
+    const data = await apiFetch('/streams');
+    loading.style.display = 'none';
+    cachedStreams = data.streams || [];
+
+    if (cachedStreams.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state glass">
+          <h3>No streams yet</h3>
+          <p>Create your first stream to start broadcasting to the world.</p>
+          <button class="btn-primary" onclick="openCreateModal()">+ Create Stream</button>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = cachedStreams.map(s => streamCard(s)).join('');
+  } catch (err) {
+    loading.style.display = 'none';
+    container.innerHTML = `<div class="empty-state glass"><h3>Error loading streams</h3><p>${err.message}</p></div>`;
+  }
+}
+
+function streamCard(s) {
+  const isRunning = s.status === 'running';
+  const statusClass = isRunning ? 'status-running' : 'status-stopped';
+  const statusText = isRunning ? 'Online' : 'Offline';
+  const djActive = s.autodj && s.autodj.active;
+
+  return `
+    <div class="stream-card glass">
+      <div class="stream-card-header">
+        <div class="stream-name">${esc(s.name)}</div>
+        <div class="stream-status ${statusClass}">
+          <div class="status-dot"></div>
+          ${statusText}
+        </div>
+      </div>
+
+      <div class="stream-info">
+        <div class="info-item full">
+          <div class="info-label">Listen URL</div>
+          <div class="info-value">${esc(s.listen_url)}</div>
+        </div>
+        <div class="info-item full">
+          <div class="info-label">Direct URL (Fallback)</div>
+          <div class="info-value">${esc(s.direct_url)}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">DJ Source Host</div>
+          <div class="info-value">${esc(s.direct_url.replace('http://', '').split('/')[0].split(':')[0])}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">DJ Source Port</div>
+          <div class="info-value">${s.port}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Mount Point</div>
+          <div class="info-value">${esc(s.mount)}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Source Password</div>
+          <div class="info-value">${esc(s.source_password)}</div>
+        </div>
+      </div>
+
+      ${djActive ? `
+      <div style="padding: 10px; background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.15); border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 13px;">
+        AutoDJ Active: ${esc(s.autodj.currentTrack ? (s.autodj.currentTrack.title || s.autodj.currentTrack.filename) : 'Starting...')}
+        <span style="color: var(--text-muted);"> (${s.autodj.trackIndex + 1}/${s.autodj.totalTracks})</span>
+      </div>` : ''}
+
+      <div class="stream-card-footer">
+        <div class="listener-count">
+          <strong>${s.listeners || 0}</strong> listener${(s.listeners || 0) !== 1 ? 's' : ''}
+          &nbsp;&middot;&nbsp; max ${s.max_listeners}
+        </div>
+        <div style="display: flex; gap: 8px;">
+          ${!djActive
+            ? `<button class="btn-success btn-sm" onclick="startAutoDJ(${s.id})">Start AutoDJ</button>`
+            : `<button class="btn-ghost btn-sm" onclick="stopAutoDJ(${s.id})">Stop AutoDJ</button>`
+          }
+          <button class="btn-danger btn-sm" onclick="deleteStream(${s.id})">Delete</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+// -----------------------------------------------------------------------
+// Create / Delete Stream
+// -----------------------------------------------------------------------
+function openCreateModal() {
+  document.getElementById('create-modal').classList.add('active');
+  document.getElementById('stream-name').value = '';
+  document.getElementById('stream-mount').value = '/live';
+  document.getElementById('create-error').style.display = 'none';
+}
+
+function closeCreateModal() {
+  document.getElementById('create-modal').classList.remove('active');
+}
+
+async function createStream() {
+  const name = document.getElementById('stream-name').value.trim();
+  const mount = document.getElementById('stream-mount').value.trim() || '/live';
+  const btn = document.getElementById('create-btn');
+  const errEl = document.getElementById('create-error');
+
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    await apiFetch('/streams/create', {
+      method: 'POST',
+      body: JSON.stringify({ name, mount }),
+    });
+    closeCreateModal();
+    loadStreams();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Create';
+  }
+}
+
+async function deleteStream(id) {
+  if (!confirm('Delete this stream? This will stop the container and remove all data.')) return;
+
+  try {
+    await apiFetch('/streams/' + id, { method: 'DELETE' });
+    loadStreams();
+  } catch (err) {
+    alert('Failed to delete: ' + err.message);
+  }
+}
+
+// -----------------------------------------------------------------------
+// AutoDJ Controls
+// -----------------------------------------------------------------------
+async function startAutoDJ(streamId) {
+  const choice = prompt('Enter playlist ID to play, or type "shuffle" to shuffle all tracks:');
+  if (choice === null) return;
+
+  try {
+    const body = choice.toLowerCase() === 'shuffle'
+      ? { shuffle_all: true }
+      : { playlist_id: parseInt(choice) };
+
+    await apiFetch('/autodj/' + streamId + '/start', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    loadStreams();
+  } catch (err) {
+    alert('AutoDJ error: ' + err.message);
+  }
+}
+
+async function stopAutoDJ(streamId) {
+  try {
+    await apiFetch('/autodj/' + streamId + '/stop', { method: 'POST' });
+    loadStreams();
+  } catch (err) {
+    alert('AutoDJ error: ' + err.message);
+  }
+}
+
+// -----------------------------------------------------------------------
+// Tracks
+// -----------------------------------------------------------------------
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.classList.add('dragover');
+});
+
+dropZone.addEventListener('dragleave', () => {
+  dropZone.classList.remove('dragover');
+});
+
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  uploadFiles(e.dataTransfer.files);
+});
+
+fileInput.addEventListener('change', () => {
+  uploadFiles(fileInput.files);
+  fileInput.value = '';
+});
+
+async function uploadFiles(files) {
+  const progressEl = document.getElementById('upload-progress');
+  const fillEl = document.getElementById('progress-fill');
+  const textEl = document.getElementById('progress-text');
+
+  progressEl.style.display = 'block';
+  const total = files.length;
+  let completed = 0;
+
+  for (const file of files) {
+    textEl.textContent = `Uploading ${completed + 1} of ${total}: ${file.name}`;
+    fillEl.style.width = ((completed / total) * 100) + '%';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      await apiFetch('/tracks/upload', {
+        method: 'POST',
+        body: formData,
+      });
+    } catch (err) {
+      console.error('Upload failed:', file.name, err);
+    }
+    completed++;
+    fillEl.style.width = ((completed / total) * 100) + '%';
+  }
+
+  textEl.textContent = `Uploaded ${completed} file(s)`;
+  setTimeout(() => { progressEl.style.display = 'none'; }, 2000);
+  loadTracks();
+}
+
+async function loadTracks() {
+  const container = document.getElementById('tracks-container');
+  try {
+    const data = await apiFetch('/tracks');
+    cachedTracks = data.tracks || [];
+
+    if (cachedTracks.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>No tracks uploaded yet. Upload some MP3 files above.</p></div>';
+      return;
+    }
+
+    container.innerHTML = cachedTracks.map(t => `
+      <div class="track-item">
+        <div class="track-info">
+          <div class="track-title">${esc(t.title || t.filename)}</div>
+          <div class="track-artist">${esc(t.artist || 'Unknown artist')}</div>
+        </div>
+        <div class="track-duration">${formatDuration(t.duration)}</div>
+        <div class="track-actions">
+          <button class="btn-danger btn-xs" onclick="deleteTrack(${t.id})">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><p>Error: ${err.message}</p></div>`;
+  }
+}
+
+async function deleteTrack(id) {
+  if (!confirm('Delete this track?')) return;
+  try {
+    await apiFetch('/tracks/' + id, { method: 'DELETE' });
+    loadTracks();
+  } catch (err) {
+    alert('Failed: ' + err.message);
+  }
+}
+
+function formatDuration(seconds) {
+  if (!seconds || seconds <= 0) return '--:--';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+// -----------------------------------------------------------------------
+// Playlists
+// -----------------------------------------------------------------------
+function openPlaylistModal() {
+  document.getElementById('playlist-modal').classList.add('active');
+  document.getElementById('playlist-name-input').value = '';
+  document.getElementById('playlist-error').style.display = 'none';
+}
+
+function closePlaylistModal() {
+  document.getElementById('playlist-modal').classList.remove('active');
+}
+
+async function createPlaylist() {
+  const name = document.getElementById('playlist-name-input').value.trim();
+  const errEl = document.getElementById('playlist-error');
+
+  if (!name) {
+    errEl.textContent = 'Name is required';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    await apiFetch('/playlists', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    closePlaylistModal();
+    loadPlaylists();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+async function loadPlaylists() {
+  const container = document.getElementById('playlists-container');
+  try {
+    const data = await apiFetch('/playlists');
+    cachedPlaylists = data.playlists || [];
+
+    if (cachedPlaylists.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>No playlists yet. Create one to organize your tracks.</p></div>';
+      return;
+    }
+
+    container.innerHTML = cachedPlaylists.map(p => `
+      <div class="playlist-item" onclick="openPlaylistDetail(${p.id})">
+        <div>
+          <div class="playlist-name">${esc(p.name)}</div>
+          <div class="playlist-count">${p.track_count} track${p.track_count !== 1 ? 's' : ''}</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-danger btn-xs" onclick="event.stopPropagation(); deletePlaylist(${p.id})">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><p>Error: ${err.message}</p></div>`;
+  }
+}
+
+async function deletePlaylist(id) {
+  if (!confirm('Delete this playlist?')) return;
+  try {
+    await apiFetch('/playlists/' + id, { method: 'DELETE' });
+    loadPlaylists();
+  } catch (err) {
+    alert('Failed: ' + err.message);
+  }
+}
+
+async function openPlaylistDetail(id) {
+  currentPlaylistId = id;
+  document.getElementById('playlists-list-view').style.display = 'none';
+  document.getElementById('playlist-detail-view').style.display = 'block';
+
+  try {
+    const data = await apiFetch('/playlists/' + id);
+    document.getElementById('playlist-detail-name').textContent = data.playlist.name + ' (ID: ' + id + ')';
+
+    const container = document.getElementById('playlist-tracks-container');
+    const tracks = data.tracks || [];
+
+    if (tracks.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>No tracks in this playlist. Add some from your library.</p></div>';
+      return;
+    }
+
+    container.innerHTML = tracks.map((t, i) => `
+      <div class="track-item">
+        <span style="color: var(--text-muted); font-size: 12px; width: 28px; flex-shrink: 0; text-align: center;">${i + 1}</span>
+        <div class="track-info">
+          <div class="track-title">${esc(t.title || t.filename)}</div>
+          <div class="track-artist">${esc(t.artist || 'Unknown')}</div>
+        </div>
+        <div class="track-duration">${formatDuration(t.duration)}</div>
+        <div class="track-actions">
+          ${i > 0 ? `<button class="reorder-btn" onclick="moveTrackInPlaylist(${id}, ${t.id}, 'up', ${i})" title="Move up">&#9650;</button>` : ''}
+          ${i < tracks.length - 1 ? `<button class="reorder-btn" onclick="moveTrackInPlaylist(${id}, ${t.id}, 'down', ${i})" title="Move down">&#9660;</button>` : ''}
+          <button class="btn-danger btn-xs" onclick="removeTrackFromPlaylist(${id}, ${t.id})">Remove</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    document.getElementById('playlist-tracks-container').innerHTML = `<p>Error: ${err.message}</p>`;
+  }
+}
+
+function closePlaylistDetail() {
+  document.getElementById('playlists-list-view').style.display = 'block';
+  document.getElementById('playlist-detail-view').style.display = 'none';
+  currentPlaylistId = null;
+  loadPlaylists();
+}
+
+async function removeTrackFromPlaylist(playlistId, trackId) {
+  try {
+    await apiFetch('/playlists/' + playlistId + '/tracks/' + trackId, { method: 'DELETE' });
+    openPlaylistDetail(playlistId);
+  } catch (err) {
+    alert('Failed: ' + err.message);
+  }
+}
+
+async function moveTrackInPlaylist(playlistId, trackId, direction, currentIndex) {
+  // Get current track order
+  try {
+    const data = await apiFetch('/playlists/' + playlistId);
+    const trackIds = data.tracks.map(t => t.id);
+    const idx = trackIds.indexOf(trackId);
+    if (idx === -1) return;
+
+    const newIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (newIdx < 0 || newIdx >= trackIds.length) return;
+
+    // Swap
+    [trackIds[idx], trackIds[newIdx]] = [trackIds[newIdx], trackIds[idx]];
+
+    await apiFetch('/playlists/' + playlistId + '/reorder', {
+      method: 'PUT',
+      body: JSON.stringify({ track_ids: trackIds }),
+    });
+    openPlaylistDetail(playlistId);
+  } catch (err) {
+    alert('Failed: ' + err.message);
+  }
+}
+
+function openAddTrackModal() {
+  document.getElementById('add-track-modal').classList.add('active');
+  loadAddTrackList();
+}
+
+function closeAddTrackModal() {
+  document.getElementById('add-track-modal').classList.remove('active');
+}
+
+async function loadAddTrackList() {
+  const container = document.getElementById('add-track-list');
+  try {
+    const data = await apiFetch('/tracks');
+    const tracks = data.tracks || [];
+
+    if (tracks.length === 0) {
+      container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No tracks in your library. Upload some first.</p>';
+      return;
+    }
+
+    container.innerHTML = tracks.map(t => `
+      <div class="track-item">
+        <div class="track-info">
+          <div class="track-title">${esc(t.title || t.filename)}</div>
+          <div class="track-artist">${esc(t.artist || 'Unknown')}</div>
+        </div>
+        <div class="track-duration">${formatDuration(t.duration)}</div>
+        <button class="btn-primary btn-xs" onclick="addTrackToPlaylist(${t.id})">Add</button>
+      </div>
+    `).join('');
+  } catch (err) {
+    container.innerHTML = `<p>Error: ${err.message}</p>`;
+  }
+}
+
+async function addTrackToPlaylist(trackId) {
+  try {
+    await apiFetch('/playlists/' + currentPlaylistId + '/tracks', {
+      method: 'POST',
+      body: JSON.stringify({ track_id: trackId }),
+    });
+    openPlaylistDetail(currentPlaylistId);
+  } catch (err) {
+    alert('Failed: ' + err.message);
+  }
+}
+
+// -----------------------------------------------------------------------
+// Schedules
+// -----------------------------------------------------------------------
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+async function openScheduleModal() {
+  document.getElementById('schedule-modal').classList.add('active');
+  document.getElementById('schedule-error').style.display = 'none';
+
+  // Populate dropdowns
+  try {
+    const [streamsData, playlistsData] = await Promise.all([
+      apiFetch('/streams'),
+      apiFetch('/playlists'),
+    ]);
+
+    const streamSel = document.getElementById('schedule-stream');
+    streamSel.innerHTML = (streamsData.streams || []).map(s =>
+      `<option value="${s.id}">${esc(s.name)}</option>`
+    ).join('');
+
+    const plSel = document.getElementById('schedule-playlist');
+    plSel.innerHTML = (playlistsData.playlists || []).map(p =>
+      `<option value="${p.id}">${esc(p.name)}</option>`
+    ).join('');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function closeScheduleModal() {
+  document.getElementById('schedule-modal').classList.remove('active');
+}
+
+async function createSchedule() {
+  const errEl = document.getElementById('schedule-error');
+  const stream_id = parseInt(document.getElementById('schedule-stream').value);
+  const playlist_id = parseInt(document.getElementById('schedule-playlist').value);
+  const day_of_week = parseInt(document.getElementById('schedule-day').value);
+  const start_time = document.getElementById('schedule-start').value;
+  const end_time = document.getElementById('schedule-end').value;
+
+  if (!start_time || !end_time) {
+    errEl.textContent = 'Start and end times are required';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    await apiFetch('/schedules', {
+      method: 'POST',
+      body: JSON.stringify({ stream_id, playlist_id, day_of_week, start_time, end_time }),
+    });
+    closeScheduleModal();
+    loadSchedules();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+async function loadSchedules() {
+  try {
+    const data = await apiFetch('/schedules');
+    const schedules = data.schedules || [];
+
+    renderTimeline(schedules);
+
+    const container = document.getElementById('schedules-container');
+    if (schedules.length === 0) {
+      container.innerHTML = '<div class="empty-state glass"><p>No schedules yet. Create one to automate your broadcasts.</p></div>';
+      return;
+    }
+
+    container.innerHTML = schedules.map(s => `
+      <div class="schedule-item">
+        <div class="schedule-info">
+          <div class="primary">${DAY_NAMES_FULL[s.day_of_week]} ${s.start_time} - ${s.end_time}</div>
+          <div class="secondary">${esc(s.stream_name)} &middot; ${esc(s.playlist_name)}</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <label class="toggle">
+            <input type="checkbox" ${s.enabled ? 'checked' : ''} onchange="toggleSchedule(${s.id})">
+            <div class="toggle-slider"></div>
+          </label>
+          <button class="btn-danger btn-xs" onclick="deleteSchedule(${s.id})">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    document.getElementById('schedules-container').innerHTML = `<p>Error: ${err.message}</p>`;
+  }
+}
+
+function renderTimeline(schedules) {
+  const el = document.getElementById('schedule-timeline');
+
+  let html = '<div class="schedule-week">';
+  // Header row
+  html += '<div></div>';
+  for (let h = 0; h < 24; h++) {
+    html += `<div class="schedule-hour-header">${String(h).padStart(2, '0')}</div>`;
+  }
+
+  for (let d = 0; d < 7; d++) {
+    html += `<div class="schedule-day-label">${DAY_NAMES[d]}</div>`;
+
+    const daySchedules = schedules.filter(s => s.day_of_week === d);
+
+    for (let h = 0; h < 24; h++) {
+      html += '<div class="schedule-hour">';
+
+      for (const s of daySchedules) {
+        const startH = parseInt(s.start_time.split(':')[0]);
+        const startM = parseInt(s.start_time.split(':')[1]);
+        const endH = parseInt(s.end_time.split(':')[0]);
+        const endM = parseInt(s.end_time.split(':')[1]);
+
+        const startFrac = startH + startM / 60;
+        const endFrac = endH + endM / 60;
+
+        if (h >= Math.floor(startFrac) && h < Math.ceil(endFrac)) {
+          const leftPct = h === Math.floor(startFrac) ? ((startM / 60) * 100) : 0;
+          const rightPct = h === Math.floor(endFrac) && endM > 0 ? ((1 - endM / 60) * 100) : (h + 1 > endFrac ? 100 : 0);
+
+          html += `<div class="schedule-block ${s.enabled ? '' : 'disabled'}" style="left: ${leftPct}%; right: ${rightPct}%;" title="${s.playlist_name} (${s.start_time}-${s.end_time})">${h === Math.floor(startFrac) ? esc(s.playlist_name) : ''}</div>`;
+        }
+      }
+
+      html += '</div>';
+    }
+  }
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+async function toggleSchedule(id) {
+  try {
+    await apiFetch('/schedules/' + id + '/toggle', { method: 'PUT' });
+    loadSchedules();
+  } catch (err) {
+    alert('Failed: ' + err.message);
+  }
+}
+
+async function deleteSchedule(id) {
+  if (!confirm('Delete this schedule?')) return;
+  try {
+    await apiFetch('/schedules/' + id, { method: 'DELETE' });
+    loadSchedules();
+  } catch (err) {
+    alert('Failed: ' + err.message);
+  }
+}
+
+// -----------------------------------------------------------------------
+// History
+// -----------------------------------------------------------------------
+async function populateHistoryStreamSelect() {
+  const sel = document.getElementById('history-stream-select');
+  try {
+    const data = await apiFetch('/streams');
+    sel.innerHTML = '<option value="">Select a stream</option>' +
+      (data.streams || []).map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  } catch {}
+}
+
+async function loadHistory() {
+  const streamId = document.getElementById('history-stream-select').value;
+  const tbody = document.getElementById('history-tbody');
+  const pagination = document.getElementById('history-pagination');
+
+  if (!streamId) {
+    tbody.innerHTML = '';
+    pagination.innerHTML = '';
+    return;
+  }
+
+  try {
+    const data = await apiFetch('/history/' + streamId + '?page=' + historyPage + '&limit=50');
+    const items = data.history || [];
+
+    if (items.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 24px;">No play history yet</td></tr>';
+      pagination.innerHTML = '';
+      return;
+    }
+
+    tbody.innerHTML = items.map(h => `
+      <tr>
+        <td>${esc(h.title || h.filename)}</td>
+        <td>${esc(h.artist || '--')}</td>
+        <td style="color: var(--text-muted);">${new Date(h.played_at).toLocaleString()}</td>
+      </tr>
+    `).join('');
+
+    const p = data.pagination;
+    if (p.pages > 1) {
+      let btns = '';
+      for (let i = 1; i <= p.pages; i++) {
+        btns += `<button class="${i === p.page ? 'btn-primary' : 'btn-ghost'} btn-xs" onclick="historyPage=${i}; loadHistory();" style="margin: 0 2px;">${i}</button>`;
+      }
+      pagination.innerHTML = btns;
+    } else {
+      pagination.innerHTML = '';
+    }
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="3">Error: ${err.message}</td></tr>`;
+  }
+}
+
+// -----------------------------------------------------------------------
+// Widget
+// -----------------------------------------------------------------------
+async function populateWidgetStreamSelect() {
+  const sel = document.getElementById('widget-stream-select');
+  try {
+    const data = await apiFetch('/streams');
+    sel.innerHTML = '<option value="">Select a stream</option>' +
+      (data.streams || []).map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  } catch {}
+}
+
+function updateWidgetPreview() {
+  const streamId = document.getElementById('widget-stream-select').value;
+  const output = document.getElementById('widget-output');
+
+  if (!streamId) {
+    output.style.display = 'none';
+    return;
+  }
+
+  output.style.display = 'block';
+
+  const widgetUrl = window.location.origin + '/api/widget/' + streamId;
+  const embedCode = `<iframe src="${widgetUrl}" width="400" height="140" frameborder="0" style="border-radius: 16px;"></iframe>`;
+
+  document.getElementById('embed-code').textContent = embedCode;
+  document.getElementById('widget-iframe').src = widgetUrl;
+}
+
+function copyEmbedCode() {
+  const code = document.getElementById('embed-code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const el = document.getElementById('embed-code');
+    const orig = el.style.borderColor;
+    el.style.borderColor = 'var(--success)';
+    setTimeout(() => { el.style.borderColor = orig; }, 1000);
+  });
+}
+
+// -----------------------------------------------------------------------
+// Boot
+// -----------------------------------------------------------------------
+init();
+</script>
+</body>
+</html>

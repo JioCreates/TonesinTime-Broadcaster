@@ -1,0 +1,2252 @@
+/* ==================== CSS CUSTOM PROPERTIES ==================== */
+:root {
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #2a2a2a;
+  --bg-header: #303030;
+  --bg-input: #1e1e1e;
+  --border-primary: #3d3846;
+  --border-dark: #1a1a1a;
+  --border-hover: #504945;
+  --text-primary: #deddda;
+  --text-secondary: #9a9996;
+  --text-heading: #ffffff;
+  --text-muted: #77767b;
+  --accent: #e5a50a;
+  --accent-hover: #f5b800;
+  --green: #33d17a;
+  --green-dark: #2ec27e;
+  --red: #e01b24;
+  --red-hover: #f44336;
+  --yellow: #f6d32d;
+  --scrollbar-thumb: #3d3846;
+  --scrollbar-hover: #504945;
+  --slider-thumb: #deddda;
+  --slider-thumb-hover: #ffffff;
+  --slider-thumb-border: #1e1e1e;
+  --checkbox-bg: #1e1e1e;
+  --color-scheme: dark;
+}
+
+body.light-theme {
+  --bg-primary: #ebebeb;
+  --bg-secondary: #f8f8f8;
+  --bg-header: #dedede;
+  --bg-input: #ffffff;
+  --border-primary: #c8c8c8;
+  --border-dark: #b0b0b0;
+  --border-hover: #a0a0a0;
+  --text-primary: #111111;
+  --text-secondary: #444444;
+  --text-heading: #000000;
+  --text-muted: #666666;
+  --scrollbar-thumb: #b0b0b0;
+  --scrollbar-hover: #909090;
+  --slider-thumb: #333333;
+  --slider-thumb-hover: #111111;
+  --slider-thumb-border: #f8f8f8;
+  --checkbox-bg: #ffffff;
+  --color-scheme: light;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Cantarell', 'Noto Sans', 'Ubuntu', 'Segoe UI', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  zoom: var(--ui-zoom, 1);
+}
+
+/* ==================== GNOME HEADER BAR ==================== */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  background: var(--bg-header);
+  padding: 6px 14px;
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.top-bar h1 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-heading);
+  letter-spacing: 0;
+}
+
+.top-bar .subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-left: 8px;
+}
+
+.status-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.status-dot.live {
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(51, 209, 122, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.status-text { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.uptime { font-size: 11px; color: var(--text-secondary); font-family: 'Ubuntu Mono', 'Source Code Pro', monospace; font-weight: 500; }
+.listeners { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+
+/* ==================== TAB BAR (GNOME style) ==================== */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  background: var(--bg-header);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-dark);
+  padding: 0 8px;
+}
+
+.tab-btn {
+  padding: 8px 20px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab-btn.active {
+  color: var(--text-heading);
+  border-bottom-color: var(--accent);
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: rgba(128, 128, 128, 0.08);
+}
+
+/* ==================== CONTROL BAR ==================== */
+.control-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.vu-bar {
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.btn-bar {
+  flex: 1;
+  max-width: 120px;
+  padding: 8px 0;
+  font-size: 11px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.meter-row { display: flex; align-items: center; gap: 6px; }
+.meter-label { font-size: 9px; color: var(--text-muted); min-width: 10px; font-weight: 700; font-family: 'Ubuntu Mono', 'Source Code Pro', monospace; }
+.meter { flex: 1; height: 8px; background: var(--border-primary); border-radius: 4px; overflow: hidden; position: relative; border: 1px solid var(--border-dark); }
+.meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--green) 60%, var(--yellow) 80%, var(--red) 100%); border-radius: 3px; transition: width 0.08s ease; }
+.meter-fill.hot { background: linear-gradient(90deg, var(--green), var(--yellow) 50%, var(--red) 85%, #c01c28 100%); }
+.peak-hold { position: absolute; top: 0; width: 2px; height: 100%; background: var(--text-heading); border-radius: 1px; display: none; transition: left 0.05s ease; }
+.peak-hold.peak-hot { background: var(--red); }
+
+/* ==================== MAIN AREA ==================== */
+.main-area {
+  flex: 1;
+  min-height: 0;
+  padding: 10px 12px;
+}
+
+.tab-content {
+  display: none;
+  height: 100%;
+  gap: 10px;
+}
+
+.tab-content.active {
+  display: flex;
+}
+
+/* Column */
+.col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.col-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  align-content: start;
+}
+
+.col-scroll::-webkit-scrollbar { width: 6px; }
+.col-scroll::-webkit-scrollbar-track { background: transparent; }
+.col-scroll::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+.col-scroll::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+
+/* ==================== GTK CARD ==================== */
+.section {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border: 1px solid var(--border-primary);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.section-header h2 { margin-bottom: 0; flex: 1; }
+
+/* Drag handle */
+.drag-handle {
+  color: var(--border-hover);
+  font-size: 12px;
+  cursor: grab;
+  user-select: none;
+  line-height: 1;
+  padding: 2px;
+  border-radius: 3px;
+  transition: color 0.1s ease;
+  flex-shrink: 0;
+}
+
+.drag-handle:hover { color: var(--text-secondary); }
+.drag-handle:active { cursor: grabbing; }
+
+/* Draggable card states */
+.draggable-card {
+  transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.draggable-card.dragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+
+.draggable-card.drag-over-card {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* Drop indicator line */
+.drop-indicator {
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  margin: 2px 0;
+  transition: opacity 0.1s ease;
+}
+
+/* Drop zone highlight */
+[data-drop-zone].drop-zone-active {
+  background: rgba(229, 165, 10, 0.03);
+  border-radius: 8px;
+}
+
+.section h2 {
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+/* ==================== GTK FORM CONTROLS ==================== */
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.form-row:last-child { margin-bottom: 0; }
+
+label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  min-width: 60px;
+  font-weight: 500;
+}
+
+select, input[type="number"], input[type="text"], input[type="time"] {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color 0.15s ease;
+}
+
+input[type="time"] { color-scheme: var(--color-scheme); }
+
+select:focus, input[type="number"]:focus, input[type="text"]:focus, input[type="time"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(229, 165, 10, 0.15);
+}
+
+select:disabled, input:disabled { opacity: 0.4; }
+select option { background: var(--bg-secondary); color: var(--text-primary); }
+
+/* Gain slider — GTK style */
+.gain-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--border-primary);
+  border-radius: 2px;
+  outline: none;
+  border: none;
+  padding: 0;
+}
+
+.gain-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--slider-thumb);
+  cursor: pointer;
+  border: 2px solid var(--slider-thumb-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.gain-slider::-webkit-slider-thumb:hover {
+  background: var(--slider-thumb-hover);
+}
+
+.gain-value {
+  font-size: 11px;
+  color: var(--text-secondary);
+  min-width: 32px;
+  text-align: right;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-weight: 500;
+}
+
+/* ==================== GTK BUTTONS ==================== */
+.btn-container { margin-top: auto; padding-top: 6px; flex-shrink: 0; }
+
+.btn {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-small {
+  width: auto;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background: var(--border-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hover);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-small:hover { background: var(--border-hover); color: var(--text-heading); }
+
+.btn-start {
+  background: var(--accent);
+  color: #1e1e1e;
+  border: none;
+}
+
+.btn-start:hover { background: var(--accent-hover); }
+
+.btn-stop {
+  background: var(--red);
+  color: #ffffff;
+  border: none;
+}
+
+.btn-stop:hover { background: var(--red-hover); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.reconnect-status { text-align: center; font-size: 11px; color: var(--yellow); margin-bottom: 6px; font-weight: 500; }
+
+/* ==================== URL / EMBED ==================== */
+.url-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-size: 11px;
+  color: var(--green);
+  word-break: break-all;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 4px;
+  transition: all 0.15s ease;
+}
+
+.url-box:hover { background: var(--bg-secondary); border-color: var(--border-hover); }
+.url-label { font-size: 9px; color: var(--text-muted); text-align: center; margin-top: 3px; font-weight: 500; }
+.embed-section { margin-top: 6px; }
+
+.embed-code {
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-size: 10px;
+  color: var(--text-secondary);
+  word-break: break-all;
+  cursor: pointer;
+  white-space: pre-wrap;
+  transition: all 0.15s ease;
+}
+
+.embed-code:hover { background: var(--bg-secondary); }
+.codec-hint { font-size: 10px; color: var(--text-muted); margin-top: 4px; font-weight: 400; }
+#urlSection { overflow-y: auto; flex-shrink: 1; }
+
+/* ==================== EMBED DESIGNER ==================== */
+.color-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 28px;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  background: var(--bg-input);
+  cursor: pointer;
+  padding: 2px;
+  flex: 0 0 32px;
+  min-width: 32px;
+}
+
+.color-input::-webkit-color-swatch-wrapper { padding: 0; }
+.color-input::-webkit-color-swatch { border: none; border-radius: 4px; }
+
+.embed-preview-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.embed-preview-container {
+  background: var(--border-dark);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  border: 1px solid var(--border-primary);
+}
+
+.embed-preview-frame {
+  border: none;
+  width: 100%;
+  height: 160px;
+  border-radius: 6px;
+  background: transparent;
+}
+
+/* ==================== AUTO-DJ ==================== */
+
+/* Track list */
+.track-list {
+  max-height: 160px;
+  overflow-y: auto;
+  margin-top: 6px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+}
+
+.track-list::-webkit-scrollbar { width: 4px; }
+.track-list::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+.track-list-empty { font-size: 11px; color: var(--text-muted); text-align: center; padding: 14px 8px; }
+
+.track-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 8px;
+  gap: 8px;
+  transition: background 0.1s ease;
+  cursor: default;
+  border-bottom: 1px solid var(--bg-secondary);
+}
+
+.track-item:last-child { border-bottom: none; }
+.track-item:hover { background: var(--bg-secondary); }
+.track-item[draggable="true"] { cursor: grab; }
+.track-item[draggable="true"]:active { cursor: grabbing; opacity: 0.6; }
+
+.track-order { font-size: 10px; color: var(--text-muted); min-width: 18px; text-align: center; font-family: 'Ubuntu Mono', 'Source Code Pro', monospace; font-weight: 700; }
+.track-info { flex: 1; min-width: 0; overflow: hidden; }
+.track-title { font-size: 11px; color: var(--text-primary); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.track-meta { font-size: 9px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.track-actions { display: flex; gap: 2px; align-items: center; flex-shrink: 0; }
+
+.track-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 9px;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: all 0.1s ease;
+}
+
+.track-action-btn:hover { color: var(--text-primary); background: var(--border-primary); }
+.track-action-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.track-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.1s ease;
+  flex-shrink: 0;
+}
+
+.track-remove:hover { color: var(--red); }
+.track-list.drag-over { background: rgba(229, 165, 10, 0.05); border-color: var(--accent); }
+
+.track-list.file-drop-active {
+  border-color: var(--green);
+  background: rgba(51, 209, 122, 0.08);
+  border-style: dashed;
+}
+
+/* Playlist tabs */
+.playlist-tabs { display: flex; gap: 4px; margin: 6px 0; flex-wrap: wrap; }
+
+.playlist-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--border-primary);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  border: 1px solid transparent;
+}
+
+.playlist-tab.active { background: var(--accent); color: #1e1e1e; font-weight: 600; }
+.playlist-tab:hover:not(.active) { background: var(--border-hover); color: var(--text-primary); }
+.playlist-count { font-size: 9px; color: inherit; opacity: 0.6; font-family: 'Ubuntu Mono', 'Source Code Pro', monospace; }
+
+.playlist-delete {
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.4;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  transition: opacity 0.1s ease;
+}
+
+.playlist-delete:hover { opacity: 1; }
+
+/* Schedule */
+.schedule-form { margin-bottom: 8px; }
+.schedule-list { display: flex; flex-direction: column; gap: 4px; }
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  transition: opacity 0.15s ease;
+}
+
+.schedule-item.disabled { opacity: 0.4; }
+.schedule-info { flex: 1; min-width: 0; }
+.schedule-playlist { font-size: 11px; color: var(--text-primary); font-weight: 500; }
+.schedule-time { font-size: 10px; color: var(--text-muted); }
+.schedule-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+/* Toggle switch — GTK style */
+.schedule-toggle { position: relative; display: inline-block; width: 30px; min-width: 30px; height: 16px; min-height: 16px; cursor: pointer; flex-shrink: 0; }
+.schedule-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--border-primary);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-hover);
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  left: 1px;
+  bottom: 1px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.schedule-toggle input:checked + .toggle-slider { background: var(--green); border-color: var(--green-dark); }
+.schedule-toggle input:checked + .toggle-slider::before { transform: translateX(14px); background: #ffffff; }
+
+/* Now Playing */
+.autodj-now-playing { border-color: var(--green); background: rgba(51, 209, 122, 0.05); }
+.now-playing-info { display: flex; flex-direction: column; gap: 2px; }
+.now-playing-title { font-size: 13px; font-weight: 600; color: var(--text-heading); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.now-playing-artist { font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.now-playing-progress { margin-top: 6px; }
+.progress-bar { height: 4px; background: var(--border-primary); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0%; background: var(--green); border-radius: 2px; transition: width 0.5s ease; }
+.progress-time { display: flex; justify-content: space-between; margin-top: 3px; }
+.progress-time span { font-size: 10px; color: var(--text-muted); font-family: 'Ubuntu Mono', 'Source Code Pro', monospace; }
+
+/* Auto-DJ controls */
+.autodj-controls { display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+
+.shuffle-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-secondary);
+  min-width: auto;
+}
+
+.shuffle-toggle input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--border-hover);
+  border-radius: 3px;
+  background: var(--checkbox-bg);
+  cursor: pointer;
+  position: relative;
+  flex: none;
+  min-width: 14px;
+  padding: 0;
+}
+
+.shuffle-toggle input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
+
+.shuffle-toggle input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid #1e1e1e;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* ==================== RECORDING ==================== */
+.recording-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recording-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.recording-btn.recording-active {
+  background: var(--red);
+  color: #ffffff;
+  border-color: var(--red);
+}
+
+.recording-btn.recording-active:hover {
+  background: var(--red-hover);
+}
+
+.rec-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+.rec-dot-live {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+  animation: rec-pulse 1s ease-in-out infinite;
+}
+
+@keyframes rec-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px rgba(224, 27, 36, 0.6); }
+  50% { opacity: 0.4; box-shadow: 0 0 8px rgba(224, 27, 36, 0.9); }
+}
+
+.recording-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.recording-duration {
+  font-size: 12px;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-weight: 600;
+  color: var(--red);
+}
+
+.recording-filesize {
+  font-size: 11px;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--text-secondary);
+}
+
+/* ==================== STREAM HEALTH ==================== */
+.health-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  margin-bottom: 6px;
+}
+
+.health-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.health-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.health-value {
+  font-size: 11px;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.health-sparkline {
+  width: 100%;
+  height: 40px;
+  border-radius: 4px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  display: block;
+}
+
+/* ==================== SOUND BOARD ==================== */
+.soundboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.soundboard-pad {
+  position: relative;
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--border-primary), var(--bg-input));
+  color: var(--text-primary);
+  font-size: 9px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4px;
+  overflow: hidden;
+  word-break: break-word;
+  line-height: 1.2;
+  transition: all 0.15s ease;
+  border: 1px solid var(--border-primary);
+  min-height: 52px;
+}
+
+.soundboard-pad:hover {
+  background: linear-gradient(135deg, var(--border-hover), var(--border-primary));
+  border-color: var(--border-hover);
+  transform: scale(1.03);
+}
+
+.soundboard-pad:active {
+  transform: scale(0.96);
+}
+
+.soundboard-pad.playing {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(229, 165, 10, 0.4);
+  animation: padPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes padPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(229, 165, 10, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(229, 165, 10, 0.6); }
+}
+
+.soundboard-pad .pad-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ==================== AUDIO FX / EQ ==================== */
+
+/* ==================== AUDIO LIMITER ==================== */
+.limiter-gr-meter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.limiter-gr-fill {
+  transition: width 0.1s ease;
+}
+
+/* ==================== COUNTDOWN ==================== */
+.countdown-controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.countdown-presets {
+  display: flex;
+  gap: 6px;
+}
+
+.countdown-preset {
+  flex: 1;
+}
+
+.countdown-display {
+  text-align: center;
+  padding: 12px 0;
+}
+
+.countdown-number {
+  font-size: 42px;
+  font-weight: 700;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--accent);
+  line-height: 1;
+  animation: countdownPulse 1s ease-in-out infinite;
+}
+
+.countdown-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@keyframes countdownPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ==================== LISTENERS ==================== */
+.listener-badge {
+  background: var(--border-primary);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+}
+
+.listener-badge.has-listeners {
+  background: var(--green);
+  color: #1e1e1e;
+}
+
+.listener-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px 12px;
+  margin-bottom: 6px;
+}
+
+.listener-list {
+  max-height: 100px;
+  overflow-y: auto;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+}
+
+.listener-list::-webkit-scrollbar { width: 4px; }
+.listener-list::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+
+.listener-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--bg-secondary);
+  font-size: 11px;
+}
+
+.listener-item:last-child { border-bottom: none; }
+
+.listener-ip {
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--text-primary);
+  font-size: 10px;
+}
+
+.listener-duration {
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+/* ==================== SETTINGS TAB ==================== */
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.settings-row:last-child { border-bottom: none; }
+
+.settings-row.settings-sub {
+  padding-left: 16px;
+}
+
+.settings-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.settings-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.settings-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.settings-option-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.shortcut-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.shortcut-row:last-child { border-bottom: none; }
+
+.shortcut-action {
+  font-size: 12px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.shortcut-key {
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-weight: 600;
+}
+
+/* ==================== SHARE / TUNNEL ==================== */
+.tunnel-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.tunnel-status-dot.tunnel-active {
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(51, 209, 122, 0.5);
+}
+
+.tunnel-status-dot.tunnel-connecting {
+  background: var(--yellow);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.tunnel-status-dot.tunnel-error {
+  background: var(--red);
+}
+
+.share-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.share-status {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 4px 0;
+}
+
+.share-url-box {
+  background: var(--bg-input);
+  border: 1px solid var(--green);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-size: 11px;
+  color: var(--green);
+  word-break: break-all;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.share-url-box:hover {
+  background: var(--bg-secondary);
+  border-color: var(--green-dark);
+}
+
+.share-helper {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+/* ==================== RELAY ACCOUNT ==================== */
+.relay-permanent-url .url-box {
+  font-weight: 600;
+  border-color: var(--green);
+}
+
+#relayLoggedIn .settings-row {
+  padding: 6px 0;
+}
+
+#relayPassword {
+  -webkit-text-security: disc;
+}
+
+input[type="password"] {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+input[type="password"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(229, 165, 10, 0.15);
+}
+
+/* ==================== ANALYTICS DASHBOARD ==================== */
+#tabContentAnalytics.active {
+  display: block;
+  overflow-y: auto;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding-right: 4px;
+}
+
+.kpi-row {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.kpi-card {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green);
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  line-height: 1.1;
+}
+
+.kpi-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.kpi-sub {
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+}
+
+.gauge-row {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.gauge-card {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+}
+
+.gauge-canvas {
+  display: block;
+  margin: 0 auto;
+}
+
+.gauge-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  margin-top: 4px;
+}
+
+.dashboard-bottom {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-height: 150px;
+}
+
+.dashboard-bottom > .section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==================== TOAST NOTIFICATIONS ==================== */
+.toast-container {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: toastIn 0.2s ease forwards;
+  pointer-events: auto;
+}
+
+.toast.toast-out {
+  animation: toastOut 0.3s ease forwards;
+}
+
+@keyframes toastIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastOut {
+  to { opacity: 0; transform: translateY(10px); }
+}
+
+/* ==================== SONG RECOGNITION ==================== */
+.song-recog-display {
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.song-recog-display.has-match {
+  border-color: var(--green);
+  background: rgba(51, 209, 122, 0.06);
+}
+
+.song-recog-idle {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.song-recog-listening {
+  font-size: 10px;
+  color: var(--accent);
+  text-align: center;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.song-recog-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-recog-artist {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-recog-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.song-recog-album {
+  font-size: 9px;
+  color: var(--text-muted);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-recog-score {
+  font-size: 9px;
+  font-weight: 700;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--green);
+  flex-shrink: 0;
+}
+
+/* ==================== MIC LIVE / TALKOVER ==================== */
+.mic-live-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mic-live-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 2px solid var(--border-primary);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.mic-live-btn:hover {
+  border-color: var(--border-hover);
+  background: var(--border-primary);
+}
+
+.mic-live-btn.mic-active {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+  animation: mic-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 27, 36, 0.4); }
+  50% { box-shadow: 0 0 20px 4px rgba(224, 27, 36, 0.3); }
+}
+
+.mic-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.mic-talkback-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.talkback-time {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--red);
+  line-height: 1;
+}
+
+.talkback-label {
+  font-size: 8px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==================== SILENCE DETECTION ==================== */
+.silence-indicator {
+  text-align: center;
+  padding: 6px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-primary);
+  transition: all 0.2s ease;
+}
+
+.silence-status {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--green);
+}
+
+.silence-indicator.dead-air {
+  background: rgba(224, 27, 36, 0.15);
+  border-color: var(--red);
+  animation: deadAirFlash 0.5s ease-in-out infinite;
+}
+
+.silence-indicator.dead-air .silence-status {
+  color: var(--red);
+}
+
+@keyframes deadAirFlash {
+  0%, 100% { background: rgba(224, 27, 36, 0.15); }
+  50% { background: rgba(224, 27, 36, 0.3); }
+}
+
+/* ==================== DUMP BUTTON / BROADCAST DELAY ==================== */
+.dump-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.dump-btn {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--yellow);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--yellow);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.dump-btn:hover:not(:disabled) {
+  background: var(--yellow);
+  color: #1e1e1e;
+}
+
+.dump-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.dump-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.dump-hint {
+  font-size: 9px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.delay-fill-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border-primary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.delay-fill {
+  height: 100%;
+  background: var(--yellow);
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+
+/* ==================== PROGRAM PAGE — ON AIR ==================== */
+.on-air-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+  background: var(--red);
+  padding: 2px 8px;
+  border-radius: 3px;
+  animation: rec-pulse 1s ease-in-out infinite;
+}
+
+/* Up Next */
+.up-next-section {
+  margin-top: 8px;
+  border-top: 1px solid var(--border-primary);
+  padding-top: 6px;
+}
+
+.up-next-header {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.up-next-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.up-next-list::-webkit-scrollbar { width: 4px; }
+.up-next-list::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+
+.up-next-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+}
+
+.up-next-item:first-child {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.up-next-index {
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  min-width: 14px;
+}
+
+.up-next-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.up-next-duration {
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ==================== TRANSPORT CONTROLS ==================== */
+.playback-transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-primary);
+}
+
+.transport-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border-primary);
+  border-radius: 50%;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+  line-height: 1;
+}
+
+.transport-btn:hover {
+  background: var(--border-primary);
+  border-color: var(--border-hover);
+}
+
+.transport-btn:active {
+  transform: scale(0.93);
+}
+
+.transport-play {
+  width: 42px;
+  height: 42px;
+  background: var(--green);
+  border-color: var(--green-dark);
+  color: #1e1e1e;
+  font-size: 18px;
+}
+
+.transport-play:hover {
+  background: var(--green-dark);
+  border-color: var(--green);
+}
+
+.transport-play.playing {
+  background: var(--accent);
+  border-color: var(--accent-hover);
+}
+
+.transport-stop {
+  font-size: 12px;
+}
+
+/* ==================== LIBRARY SEARCH ==================== */
+.library-search {
+  margin-bottom: 6px;
+}
+
+.library-search input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.library-search input:focus {
+  border-color: var(--accent);
+}
+
+.library-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.library-count {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  background: var(--border-primary);
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+/* ==================== PLAYLIST STATS ==================== */
+.playlist-stats {
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 2px 0 4px 0;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  display: flex;
+  gap: 12px;
+}
+
+.playlist-stats:empty {
+  display: none;
+}
+
+/* ==================== PROGRAM CLOCK ==================== */
+.program-clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.program-clock-container canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.clock-time {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--text-heading);
+  letter-spacing: 2px;
+}
+
+/* ==================== DAY-PARTS ==================== */
+.daypart-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.daypart-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  transition: border-color 0.12s ease;
+}
+
+.daypart-block:hover {
+  border-color: var(--border-hover);
+}
+
+.daypart-block[data-part="morning"] { border-left: 3px solid #f6d32d; }
+.daypart-block[data-part="midday"] { border-left: 3px solid #e5a50a; }
+.daypart-block[data-part="afternoon"] { border-left: 3px solid #ff7800; }
+.daypart-block[data-part="evening"] { border-left: 3px solid #9141ac; }
+.daypart-block[data-part="overnight"] { border-left: 3px solid #3584e4; }
+
+.daypart-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 100px;
+}
+
+.daypart-time {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  min-width: 80px;
+}
+
+.daypart-playlist {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: inherit;
+  outline: none;
+}
+
+/* ==================== AUTOMATION RULES ==================== */
+.automation-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-primary);
+}
+
+/* ==================== STATION BREAKS ==================== */
+.break-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.break-list::-webkit-scrollbar { width: 4px; }
+.break-list::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+
+.break-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+}
+
+.break-type-badge {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.break-type-badge.jingle { background: var(--accent); color: #1e1e1e; }
+.break-type-badge.sweeper { background: #3584e4; color: #fff; }
+.break-type-badge.id { background: var(--green); color: #1e1e1e; }
+.break-type-badge.promo { background: #9141ac; color: #fff; }
+
+.break-name {
+  flex: 1;
+  font-size: 10px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.break-duration {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  flex-shrink: 0;
+}
+
+/* ==================== PROGRAM LOG ==================== */
+.program-log {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.program-log::-webkit-scrollbar { width: 4px; }
+.program-log::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+
+.log-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  font-size: 10px;
+  border-radius: 3px;
+}
+
+.log-entry:nth-child(odd) {
+  background: rgba(128, 128, 128, 0.04);
+}
+
+.log-entry.log-current {
+  background: rgba(51, 209, 122, 0.08);
+  font-weight: 500;
+}
+
+.log-time {
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--text-muted);
+  font-size: 9px;
+  flex-shrink: 0;
+  min-width: 44px;
+}
+
+.log-type {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 0 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.log-type.log-song { background: var(--border-primary); color: var(--text-secondary); }
+.log-type.log-break { background: var(--accent); color: #1e1e1e; }
+.log-type.log-sched { background: #3584e4; color: #fff; }
+
+.log-title {
+  flex: 1;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.log-artist {
+  color: var(--text-muted);
+  font-size: 9px;
+  flex-shrink: 0;
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==================== PROGRAM TAB LAYOUT ==================== */
+#tabContentAutoDj.active {
+  display: flex;
+}
+
+.program-col-main {
+  flex: 1.3 !important;
+}
+
+.program-col-side {
+  flex: 1 !important;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ==================== PLAYOUT DECK ==================== */
+.program-deck {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 6px;
+}
+
+.deck-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.deck-mode-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  background: var(--border-primary);
+  color: var(--text-muted);
+}
+
+.deck-mode-badge.on-air {
+  background: var(--red);
+  color: #fff;
+  animation: rec-pulse 1s ease-in-out infinite;
+}
+
+.deck-clock {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--text-heading);
+  letter-spacing: 2px;
+}
+
+.deck-now-playing {
+  margin-bottom: 8px;
+}
+
+.deck-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.deck-artist {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deck-time-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.deck-elapsed {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--green);
+  min-width: 50px;
+}
+
+.deck-remaining {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  color: var(--text-muted);
+  min-width: 40px;
+  text-align: right;
+}
+
+.deck-progress {
+  flex: 1;
+  height: 8px;
+  background: var(--border-primary);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-dark);
+}
+
+.deck-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--green), var(--green) 70%, var(--yellow) 90%, var(--red) 100%);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.deck-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-primary);
+}
+
+.deck-playlist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deck-playlist-row select {
+  flex: 1;
+  min-width: 0;
+}
+
+.deck-transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.deck-crossfade {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  padding-left: 12px;
+  border-left: 1px solid var(--border-primary);
+}
+
+/* ==================== PROGRAM QUEUE ==================== */
+.program-queue-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.program-queue {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.program-queue::-webkit-scrollbar { width: 5px; }
+.program-queue::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  transition: background 0.1s ease;
+}
+
+.queue-item:hover {
+  background: rgba(128, 128, 128, 0.08);
+}
+
+.queue-item.queue-playing {
+  background: rgba(51, 209, 122, 0.12);
+  border-left: 3px solid var(--green);
+}
+
+.queue-item.queue-music { border-left: 3px solid var(--accent); }
+.queue-item.queue-jingle { border-left: 3px solid #3584e4; }
+
+.queue-index {
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  min-width: 18px;
+  text-align: right;
+}
+
+.queue-eta {
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  min-width: 40px;
+}
+
+.queue-title {
+  flex: 1;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.queue-artist {
+  color: var(--text-secondary);
+  font-size: 10px;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.queue-duration {
+  font-family: 'Ubuntu Mono', 'Source Code Pro', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ==================== PROGRAM SIDEBAR TABS ==================== */
+.program-sidebar-tabs {
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+  background: var(--bg-header);
+  border-radius: 6px 6px 0 0;
+  border: 1px solid var(--border-primary);
+  border-bottom: none;
+  overflow: hidden;
+}
+
+.program-side-tab {
+  flex: 1;
+  padding: 6px 4px;
+  border: none;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.program-side-tab.active {
+  color: var(--text-heading);
+  border-bottom-color: var(--accent);
+  background: var(--bg-secondary);
+}
+
+.program-side-tab:hover:not(.active) {
+  color: var(--text-primary);
+  background: rgba(128, 128, 128, 0.06);
+}
+
+.program-sidebar-content {
+  border: 1px solid var(--border-primary);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  background: var(--bg-secondary);
+}
+
+.program-side-panel {
+  display: none;
+}
+
+.program-side-panel.active {
+  display: block;
+}
+
+.program-side-panel .section {
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border-primary);
+  margin-bottom: 0;
+}
+
+.program-side-panel .section:last-child {
+  border-bottom: none;
+}

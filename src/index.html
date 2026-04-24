@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>TonesinTime</title>
+  <script>try{if(localStorage.getItem('theme')==='light')document.write('<style id="preload-theme">body{background:#ebebeb!important;color:#111!important}</style>')}catch(e){}</script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div style="display:flex; align-items:baseline;">
+      <h1>TonesinTime</h1>
+      <span class="subtitle">Audio Broadcast Server</span>
+    </div>
+    <div class="status-group">
+      <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Offline</span>
+      </div>
+      <span class="uptime" id="uptime"></span>
+      <span class="listeners" id="listenerCount">0 listeners</span>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-bar">
+    <button class="tab-btn" id="tabAnalytics" onclick="switchTab('analytics')">Analytics</button>
+    <button class="tab-btn" id="tabEmbed" onclick="switchTab('embed')">Embed</button>
+    <button class="tab-btn active" id="tabLive" onclick="switchTab('live')">Live</button>
+    <button class="tab-btn" id="tabAutoDj" onclick="switchTab('autodj')">Program</button>
+    <button class="tab-btn" id="tabSettings" onclick="switchTab('settings')">Settings</button>
+  </div>
+
+  <!-- VU + Start Bar -->
+  <div class="control-bar">
+    <div class="vu-bar">
+      <div class="meter-row">
+        <span class="meter-label">L</span>
+        <div class="meter"><div class="meter-fill" id="meterL"></div><div class="peak-hold" id="peakL"></div></div>
+      </div>
+      <div class="meter-row">
+        <span class="meter-label">R</span>
+        <div class="meter"><div class="meter-fill" id="meterR"></div><div class="peak-hold" id="peakR"></div></div>
+      </div>
+    </div>
+    <button class="btn btn-start btn-bar" id="mainStartBtn" onclick="handleMainStart()">Start Server</button>
+    <button class="btn btn-start btn-bar" id="goLiveBtn" onclick="toggleGoLive()">Go Live</button>
+  </div>
+
+  <!-- Main Area -->
+  <div class="main-area">
+
+    <!-- ==================== LIVE TAB ==================== -->
+    <div class="tab-content active" id="tabContentLive">
+      <div class="col">
+        <div class="col-scroll" data-drop-zone="live-left">
+          <div class="section draggable-card" draggable="true" data-card-id="live-audio">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Audio Input</h2>
+            </div>
+            <div class="form-row">
+              <label>Device</label>
+              <select id="audioDevice"></select>
+            </div>
+            <div class="form-row">
+              <label>Gain</label>
+              <input type="range" id="gainSlider" min="0" max="200" value="100" class="gain-slider">
+              <span class="gain-value" id="gainValue">100%</span>
+            </div>
+          </div>
+          <div class="section draggable-card" draggable="true" data-card-id="live-limiter">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Audio Limiter</h2>
+            </div>
+            <div class="form-row">
+              <label>Enable</label>
+              <label class="shuffle-toggle" style="min-width:auto;">
+                <input type="checkbox" id="limiterEnabled" onchange="toggleLimiter()">
+                <span>Limiter</span>
+              </label>
+            </div>
+            <div class="form-row">
+              <label>Threshold</label>
+              <input type="range" id="limiterThreshold" min="-50" max="0" value="-6" class="gain-slider" oninput="updateLimiter()">
+              <span class="gain-value" id="limiterThresholdVal">-6 dB</span>
+            </div>
+            <div class="form-row">
+              <label>Ceiling</label>
+              <input type="range" id="limiterCeiling" min="-20" max="0" value="0" class="gain-slider" oninput="updateLimiter()">
+              <span class="gain-value" id="limiterCeilingVal">0 dB</span>
+            </div>
+            <div class="limiter-gr-meter">
+              <span class="meter-label" style="font-size:9px; color:#77767b;">GR</span>
+              <div class="meter" style="flex:1;">
+                <div class="meter-fill limiter-gr-fill" id="limiterGrMeter" style="width:0%; background:#e5a50a;"></div>
+              </div>
+              <span class="gain-value" id="limiterGrValue" style="min-width:40px;">0 dB</span>
+            </div>
+          </div>
+          <div class="section draggable-card" draggable="true" data-card-id="live-fx">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Audio FX</h2>
+              <label class="shuffle-toggle" style="min-width:auto;">
+                <input type="checkbox" id="fxEnabled" onchange="toggleFx()">
+                <span>Enable</span>
+              </label>
+            </div>
+            <div class="form-row">
+              <label>Low 80Hz</label>
+              <input type="range" id="eqLow" min="-12" max="12" value="0" step="0.5" class="gain-slider" oninput="updateEq('low', this.value)">
+              <span class="gain-value" id="eqLowVal">0 dB</span>
+            </div>
+            <div class="form-row">
+              <label>Mid 1kHz</label>
+              <input type="range" id="eqMid" min="-12" max="12" value="0" step="0.5" class="gain-slider" oninput="updateEq('mid', this.value)">
+              <span class="gain-value" id="eqMidVal">0 dB</span>
+            </div>
+            <div class="form-row">
+              <label>High 8kHz</label>
+              <input type="range" id="eqHigh" min="-12" max="12" value="0" step="0.5" class="gain-slider" oninput="updateEq('high', this.value)">
+              <span class="gain-value" id="eqHighVal">0 dB</span>
+            </div>
+          </div>
+          <!-- Broadcast Compressor -->
+          <div class="section draggable-card" draggable="true" data-card-id="live-compressor">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Compressor</h2>
+              <label class="shuffle-toggle" style="min-width:auto;">
+                <input type="checkbox" id="compressorEnabled" onchange="toggleCompressor()">
+                <span>Enable</span>
+              </label>
+            </div>
+            <div class="form-row">
+              <label>Threshold</label>
+              <input type="range" id="compThreshold" min="-60" max="0" value="-24" class="gain-slider" oninput="updateCompressor()">
+              <span class="gain-value" id="compThresholdVal">-24 dB</span>
+            </div>
+            <div class="form-row">
+              <label>Ratio</label>
+              <input type="range" id="compRatio" min="1" max="20" value="4" step="0.5" class="gain-slider" oninput="updateCompressor()">
+              <span class="gain-value" id="compRatioVal">4:1</span>
+            </div>
+            <div class="form-row">
+              <label>Attack</label>
+              <input type="range" id="compAttack" min="0" max="100" value="5" step="1" class="gain-slider" oninput="updateCompressor()">
+              <span class="gain-value" id="compAttackVal">5 ms</span>
+            </div>
+            <div class="form-row">
+              <label>Release</label>
+              <input type="range" id="compRelease" min="10" max="1000" value="250" step="10" class="gain-slider" oninput="updateCompressor()">
+              <span class="gain-value" id="compReleaseVal">250 ms</span>
+            </div>
+            <div class="form-row">
+              <label>Makeup</label>
+              <input type="range" id="compMakeup" min="0" max="24" value="0" step="0.5" class="gain-slider" oninput="updateCompressor()">
+              <span class="gain-value" id="compMakeupVal">0 dB</span>
+            </div>
+            <div class="limiter-gr-meter">
+              <span class="meter-label" style="font-size:9px; color:#77767b;">GR</span>
+              <div class="meter" style="flex:1;">
+                <div class="meter-fill limiter-gr-fill" id="compGrMeter" style="width:0%; background:#3584e4;"></div>
+              </div>
+              <span class="gain-value" id="compGrValue" style="min-width:40px;">0 dB</span>
+            </div>
+          </div>
+        </div>
+        <div class="reconnect-status" id="reconnectStatus" style="display:none;">Reconnecting encoder...</div>
+      </div>
+
+      <div class="col">
+        <div class="col-scroll" data-drop-zone="live-right">
+          <!-- Song Recognition -->
+          <div class="section draggable-card" draggable="true" data-card-id="live-songrecog">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Song ID</h2>
+              <label class="shuffle-toggle" style="min-width:auto;">
+                <input type="checkbox" id="songRecogEnabled" onchange="toggleSongRecog()">
+                <span>Auto-detect</span>
+              </label>
+            </div>
+            <div class="song-recog-display" id="songRecogDisplay">
+              <div class="song-recog-idle">Enable to identify songs from audio input</div>
+            </div>
+            <div class="form-row" style="margin-top:6px;">
+              <label>AcoustID Key</label>
+              <input type="text" id="acoustidApiKey" placeholder="Get free key at acoustid.org" oninput="saveAcoustidKey()">
+            </div>
+          </div>
+
+          <!-- Mic Live / Talkover -->
+          <div class="section draggable-card" draggable="true" data-card-id="live-mic">
+            <div class="mic-live-container">
+              <button class="mic-live-btn" id="micLiveBtn" onclick="toggleMicLive()">
+                <span class="mic-icon">&#127908;</span>
+                <span class="mic-label" id="micLiveLabel">MIC OFF</span>
+              </button>
+              <div class="mic-talkback-timer" id="micTalkbackTimer" style="display:none;">
+                <span class="talkback-time" id="talkbackTime">0:00</span>
+                <span class="talkback-label">talk time</span>
+              </div>
+            </div>
+            <div class="form-row" style="margin-top:6px;">
+              <label>Duck Level</label>
+              <input type="range" id="duckLevel" min="-30" max="0" value="-12" class="gain-slider" oninput="document.getElementById('duckLevelVal').textContent = this.value + ' dB'">
+              <span class="gain-value" id="duckLevelVal">-12 dB</span>
+            </div>
+            <div class="form-row">
+              <label>Duck Speed</label>
+              <input type="range" id="duckSpeed" min="50" max="500" value="150" step="10" class="gain-slider" oninput="document.getElementById('duckSpeedVal').textContent = this.value + ' ms'">
+              <span class="gain-value" id="duckSpeedVal">150 ms</span>
+            </div>
+          </div>
+
+          <!-- Silence Detection / Dead Air Alarm -->
+          <div class="section draggable-card" draggable="true" data-card-id="live-silence">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Dead Air Monitor</h2>
+              <label class="shuffle-toggle" style="min-width:auto;">
+                <input type="checkbox" id="silenceDetectEnabled" checked onchange="toggleSilenceDetect()">
+                <span>Enable</span>
+              </label>
+            </div>
+            <div class="silence-indicator" id="silenceIndicator">
+              <div class="silence-status" id="silenceStatus">AUDIO OK</div>
+            </div>
+            <div class="form-row">
+              <label>Threshold</label>
+              <input type="range" id="silenceThreshold" min="-80" max="-20" value="-50" class="gain-slider" oninput="document.getElementById('silenceThresholdVal').textContent = this.value + ' dB'">
+              <span class="gain-value" id="silenceThresholdVal">-50 dB</span>
+            </div>
+            <div class="form-row">
+              <label>Trigger After</label>
+              <input type="number" id="silenceDuration" min="1" max="30" value="5" style="max-width:60px;">
+              <span class="gain-value" style="font-size:9px;">seconds</span>
+            </div>
+          </div>
+
+          <!-- Dump Button -->
+          <div class="section draggable-card" draggable="true" data-card-id="live-dump">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Broadcast Delay</h2>
+              <label class="shuffle-toggle" style="min-width:auto;">
+                <input type="checkbox" id="delayEnabled" onchange="toggleBroadcastDelay()">
+                <span>Enable</span>
+              </label>
+            </div>
+            <div class="form-row">
+              <label>Delay</label>
+              <input type="range" id="delaySeconds" min="1" max="15" value="7" step="1" class="gain-slider" oninput="document.getElementById('delaySecondsVal').textContent = this.value + 's'">
+              <span class="gain-value" id="delaySecondsVal">7s</span>
+            </div>
+            <div class="dump-btn-container">
+              <button class="dump-btn" id="dumpBtn" onclick="dumpAudio()" disabled>
+                <span class="dump-label">DUMP</span>
+                <span class="dump-hint">Clear delay buffer</span>
+              </button>
+              <div class="delay-fill-bar">
+                <div class="delay-fill" id="delayFill" style="width:0%"></div>
+              </div>
+              <span class="gain-value" id="delayBufferStatus" style="font-size:9px;">Buffer empty</span>
+            </div>
+          </div>
+
+          <!-- Sound Board -->
+          <div class="section draggable-card" draggable="true" data-card-id="live-soundboard">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Sound Board</h2>
+              <button class="btn btn-small" onclick="addSoundToBoard()">Add Sound</button>
+            </div>
+            <div class="soundboard-grid" id="soundboardGrid">
+              <div class="track-list-empty" id="soundboardEmpty">No sounds loaded. Click "Add Sound" to add pads.</div>
+            </div>
+          </div>
+          <div class="section draggable-card" draggable="true" data-card-id="live-countdown">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Go Live Countdown</h2>
+            </div>
+            <div class="countdown-controls">
+              <div class="countdown-presets">
+                <button class="btn btn-small countdown-preset" onclick="startCountdown(10)">10s</button>
+                <button class="btn btn-small countdown-preset" onclick="startCountdown(30)">30s</button>
+                <button class="btn btn-small countdown-preset" onclick="startCountdown(60)">60s</button>
+                <button class="btn btn-small countdown-preset" onclick="startCountdown(0)" id="countdownCancelBtn" style="display:none;">Cancel</button>
+              </div>
+              <div class="form-row" style="margin-top:6px;">
+                <label>Custom</label>
+                <input type="number" id="countdownCustom" value="30" min="5" max="300" style="max-width:70px;">
+                <button class="btn btn-small" onclick="startCountdown(parseInt(document.getElementById('countdownCustom').value))">Go</button>
+              </div>
+              <div class="countdown-display" id="countdownDisplay" style="display:none;">
+                <div class="countdown-number" id="countdownNumber">30</div>
+                <div class="countdown-label">Going live in...</div>
+              </div>
+              <div class="form-row" style="margin-top:6px;">
+                <label>Next Event</label>
+                <input type="text" id="nextEventName" placeholder="e.g. DJ Set @ 8pm" oninput="updateNextEvent()">
+              </div>
+            </div>
+          </div>
+          <div class="section draggable-card" draggable="true" data-card-id="live-urls" id="urlSection" style="display:none;">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Stream URLs <span style="font-size:9px; color:#77767b; text-transform:none; letter-spacing:0;">(click to copy)</span></h2>
+            </div>
+            <div class="url-box" id="localUrl" onclick="copyUrl(this)"></div>
+            <p class="url-label">Local Network</p>
+            <div class="url-box" id="publicUrl" onclick="copyUrl(this)" style="margin-top:4px;"></div>
+            <p class="url-label">Public URL</p>
+            <div class="embed-section">
+              <h2 style="margin-top:6px;">Website Embed</h2>
+              <div class="embed-code" id="embedCode" onclick="copyUrl(this)"></div>
+            </div>
+          </div>
+          <div class="section draggable-card" draggable="true" data-card-id="live-share" id="shareSection" style="display:none;">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Share</h2>
+              <div class="tunnel-status-dot" id="tunnelDot"></div>
+            </div>
+            <div class="share-content" id="shareContent">
+              <div class="share-status" id="shareStatus">Setting up tunnel...</div>
+              <div id="shareLinksArea" style="display:none;">
+                <p style="font-size:9px;color:var(--text-muted);margin-bottom:2px;">EMBED / WEBSITE</p>
+                <div class="share-url-box" id="shareEmbedUrl" onclick="copyUrl(this)"></div>
+                <p style="font-size:9px;color:var(--text-muted);margin-top:8px;margin-bottom:2px;">DIRECT STREAM (VLC, Second Life)</p>
+                <div class="share-url-box" id="shareDirectUrl" onclick="copyUrl(this)"></div>
+                <p class="share-helper">Click to copy</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PROGRAM TAB ==================== -->
+    <div class="tab-content" id="tabContentAutoDj">
+
+      <!-- LEFT: Playout Deck + Queue (dominant panel — industry standard) -->
+      <div class="col program-col-main">
+        <div class="col-scroll" data-drop-zone="dj-left">
+
+          <!-- Playout Deck — Now Playing (large, prominent) -->
+          <div class="section program-deck" id="autoDjNowPlaying">
+            <div class="deck-top-row">
+              <div class="deck-mode-badge" id="deckModeBadge">STOPPED</div>
+              <div class="deck-clock" id="clockTime">--:--:--</div>
+            </div>
+            <div class="deck-now-playing">
+              <div class="deck-title" id="npTitle">No Track Loaded</div>
+              <div class="deck-artist" id="npArtist">Select a playlist and press play</div>
+            </div>
+            <div class="deck-time-row">
+              <span class="deck-elapsed" id="npCurrentTime">0:00</span>
+              <div class="deck-progress">
+                <div class="deck-progress-fill" id="npProgress"></div>
+              </div>
+              <span class="deck-remaining" id="npDuration">0:00</span>
+            </div>
+            <!-- Transport + Playlist Select -->
+            <div class="deck-controls">
+              <div class="deck-playlist-row">
+                <select id="programPlaylistSelect" onchange="onProgramPlaylistSelect(this.value)">
+                  <option value="">-- Select Playlist --</option>
+                </select>
+                <label class="shuffle-toggle" style="min-width:auto;">
+                  <input type="checkbox" id="shuffleToggle">
+                  <span>Shuffle</span>
+                </label>
+              </div>
+              <div class="deck-transport">
+                <button class="transport-btn" onclick="programSkipBack()" title="Previous">&#9198;</button>
+                <button class="transport-btn transport-stop" onclick="programStop()" title="Stop">&#9632;</button>
+                <button class="transport-btn transport-play" onclick="programPlayPause()" id="programPlayBtn" title="Play">&#9654;</button>
+                <button class="transport-btn" onclick="programSkipForward()" title="Next">&#9197;</button>
+                <div class="deck-crossfade">
+                  <label style="font-size:9px;color:var(--text-muted);">Xfade</label>
+                  <input type="range" id="crossfadeDuration" min="0" max="12" value="4" step="1" class="gain-slider" style="max-width:80px;" oninput="updateCrossfade(this.value)">
+                  <span class="gain-value" id="crossfadeValue" style="min-width:20px;">4s</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Queue — the tall vertical rundown (central to all radio UIs) -->
+          <div class="section program-queue-section">
+            <div class="section-header">
+              <h2>Queue</h2>
+              <span class="playlist-stats" id="playlistStats"></span>
+            </div>
+            <div class="program-queue" id="upNextList">
+              <div class="track-list-empty">Select a playlist to see the queue</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT: Library, Playlists, Schedule, Breaks, Log (tabbed sidebar) -->
+      <div class="col program-col-side">
+        <div class="program-sidebar-tabs">
+          <button class="program-side-tab active" onclick="switchProgramSideTab('library')">Library</button>
+          <button class="program-side-tab" onclick="switchProgramSideTab('playlists')">Playlists</button>
+          <button class="program-side-tab" onclick="switchProgramSideTab('schedule')">Schedule</button>
+          <button class="program-side-tab" onclick="switchProgramSideTab('breaks')">Breaks</button>
+          <button class="program-side-tab" onclick="switchProgramSideTab('log')">Log</button>
+        </div>
+        <div class="col-scroll program-sidebar-content" data-drop-zone="dj-right">
+
+          <!-- Library Sub-tab -->
+          <div class="program-side-panel active" id="programSideLibrary">
+            <div class="section">
+              <div class="section-header">
+                <h2>Library</h2>
+                <span class="library-count" id="libraryCount">0</span>
+                <button class="btn btn-small" onclick="addTracksToLibrary()">Add Tracks</button>
+                <button class="btn btn-small" onclick="addAllToPlaylist()">Add All</button>
+              </div>
+              <div class="library-search">
+                <input type="text" id="librarySearch" placeholder="Search library..." oninput="filterLibrary(this.value)">
+              </div>
+              <div class="track-list" id="libraryList">
+                <div class="track-list-empty">No tracks loaded. Click "Add Tracks" or drag files here.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Playlists Sub-tab -->
+          <div class="program-side-panel" id="programSidePlaylists">
+            <div class="section">
+              <div class="section-header">
+                <h2>Playlists</h2>
+              </div>
+              <div class="form-row">
+                <input type="text" id="newPlaylistName" placeholder="New playlist name">
+                <button class="btn btn-small" onclick="createPlaylist()">Create</button>
+              </div>
+              <div class="playlist-tabs" id="playlistTabs"></div>
+              <div class="track-list" id="playlistTrackList">
+                <div class="track-list-empty">Create a playlist, then drag tracks from library</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Schedule Sub-tab -->
+          <div class="program-side-panel" id="programSideSchedule">
+            <div class="section">
+              <div class="section-header">
+                <h2>Schedule</h2>
+                <button class="btn btn-small" onclick="addSchedule()">Add</button>
+              </div>
+              <div class="schedule-form">
+                <div class="form-row">
+                  <label>Playlist</label>
+                  <select id="schedPlaylist"></select>
+                </div>
+                <div class="form-row">
+                  <label>Day</label>
+                  <select id="schedDay">
+                    <option value="Every Day">Every Day</option>
+                    <option value="Weekdays">Weekdays</option>
+                    <option value="Weekends">Weekends</option>
+                    <option value="Mon">Monday</option>
+                    <option value="Tue">Tuesday</option>
+                    <option value="Wed">Wednesday</option>
+                    <option value="Thu">Thursday</option>
+                    <option value="Fri">Friday</option>
+                    <option value="Sat">Saturday</option>
+                    <option value="Sun">Sunday</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label>Start</label>
+                  <input type="time" id="schedStart" value="09:00">
+                  <label style="min-width:30px; text-align:center;">End</label>
+                  <input type="time" id="schedEnd" value="17:00">
+                </div>
+                <div class="form-row">
+                  <label>Priority</label>
+                  <select id="schedPriority">
+                    <option value="normal">Normal</option>
+                    <option value="high">High (override)</option>
+                    <option value="fallback">Fallback</option>
+                  </select>
+                </div>
+              </div>
+              <div class="schedule-list" id="scheduleList"></div>
+            </div>
+            <div class="section">
+              <div class="section-header">
+                <h2>Day-Parts</h2>
+              </div>
+              <div class="daypart-grid">
+                <div class="daypart-block" data-part="morning">
+                  <div class="daypart-label">Morning</div>
+                  <div class="daypart-time">6-10</div>
+                  <select class="daypart-playlist" id="dpMorning" onchange="saveDayParts()"><option value="">--</option></select>
+                </div>
+                <div class="daypart-block" data-part="midday">
+                  <div class="daypart-label">Midday</div>
+                  <div class="daypart-time">10-15</div>
+                  <select class="daypart-playlist" id="dpMidday" onchange="saveDayParts()"><option value="">--</option></select>
+                </div>
+                <div class="daypart-block" data-part="afternoon">
+                  <div class="daypart-label">Afternoon</div>
+                  <div class="daypart-time">15-19</div>
+                  <select class="daypart-playlist" id="dpAfternoon" onchange="saveDayParts()"><option value="">--</option></select>
+                </div>
+                <div class="daypart-block" data-part="evening">
+                  <div class="daypart-label">Evening</div>
+                  <div class="daypart-time">19-00</div>
+                  <select class="daypart-playlist" id="dpEvening" onchange="saveDayParts()"><option value="">--</option></select>
+                </div>
+                <div class="daypart-block" data-part="overnight">
+                  <div class="daypart-label">Overnight</div>
+                  <div class="daypart-time">00-6</div>
+                  <select class="daypart-playlist" id="dpOvernight" onchange="saveDayParts()"><option value="">--</option></select>
+                </div>
+              </div>
+            </div>
+            <div class="section">
+              <div class="section-header">
+                <h2>Automation</h2>
+              </div>
+              <div class="form-row">
+                <label>Mode</label>
+                <select id="automationMode" onchange="updateAutomationMode()">
+                  <option value="sequential">Sequential</option>
+                  <option value="shuffle">Shuffle</option>
+                  <option value="smart">Smart Rotation</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Artist Sep.</label>
+                <input type="number" id="artistSeparation" min="0" max="20" value="3" style="max-width:60px;" onchange="saveAutomationRules()">
+                <span class="gain-value" style="font-size:9px;">tracks apart</span>
+              </div>
+              <div class="form-row">
+                <label>Title Sep.</label>
+                <input type="number" id="titleSeparation" min="0" max="60" value="30" style="max-width:60px;" onchange="saveAutomationRules()">
+                <span class="gain-value" style="font-size:9px;">min apart</span>
+              </div>
+              <div class="automation-toggles">
+                <label class="shuffle-toggle"><input type="checkbox" id="autoFillGaps" checked onchange="saveAutomationRules()"><span>Auto-fill gaps</span></label>
+                <label class="shuffle-toggle"><input type="checkbox" id="autoCrossfade" checked onchange="saveAutomationRules()"><span>Auto crossfade</span></label>
+                <label class="shuffle-toggle"><input type="checkbox" id="autoGainLevel" onchange="saveAutomationRules()"><span>Auto gain leveling</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Breaks Sub-tab -->
+          <div class="program-side-panel" id="programSideBreaks">
+            <div class="section">
+              <div class="section-header">
+                <h2>Station Breaks</h2>
+                <button class="btn btn-small" onclick="addStationBreak()">Add</button>
+              </div>
+              <div class="form-row">
+                <label>Insert Every</label>
+                <input type="number" id="breakInterval" min="1" max="30" value="4" style="max-width:50px;" onchange="saveAutomationRules()">
+                <span class="gain-value" style="font-size:9px;">tracks</span>
+              </div>
+              <div class="break-list" id="breakList">
+                <div class="track-list-empty">No station breaks. Add jingles, sweepers, or IDs.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Log Sub-tab -->
+          <div class="program-side-panel" id="programSideLog">
+            <div class="section">
+              <div class="section-header">
+                <h2>Program Log</h2>
+                <button class="btn btn-small" onclick="clearProgramLog()">Clear</button>
+                <button class="btn btn-small" onclick="exportProgramLog()">Export</button>
+              </div>
+              <div class="program-log" id="programLog">
+                <div class="track-list-empty">No tracks played yet</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stream URL (shown when streaming) -->
+          <div class="section" id="djUrlSection" style="display:none;">
+            <div class="section-header">
+              <h2>Stream URL</h2>
+            </div>
+            <div class="url-box" id="djLocalUrl" onclick="copyUrl(this)"></div>
+            <p class="url-label">Click to copy</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EMBED TAB ==================== -->
+    <div class="tab-content" id="tabContentEmbed">
+      <div class="col">
+        <div class="col-scroll" data-drop-zone="embed-left">
+          <div class="section draggable-card" draggable="true" data-card-id="embed-style">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Player Style</h2>
+            </div>
+            <div class="form-row">
+              <label>Theme</label>
+              <select id="embedTheme" onchange="updateEmbedPreview()">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="glass">Glass</option>
+                <option value="minimal">Minimal</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Accent</label>
+              <input type="color" id="embedAccent" value="#7c5bf5" class="color-input" onchange="updateEmbedPreview()">
+            </div>
+            <div class="form-row">
+              <label>Radius</label>
+              <input type="range" id="embedRadius" min="0" max="24" value="16" class="gain-slider" oninput="updateEmbedPreview()">
+              <span class="gain-value" id="embedRadiusVal">16px</span>
+            </div>
+            <div class="form-row">
+              <label>Width</label>
+              <input type="range" id="embedWidth" min="200" max="500" value="350" class="gain-slider" oninput="updateEmbedPreview()">
+              <span class="gain-value" id="embedWidthVal">350px</span>
+            </div>
+          </div>
+          <div class="section draggable-card" draggable="true" data-card-id="embed-content">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Content</h2>
+            </div>
+            <div class="form-row">
+              <label>Title</label>
+              <input type="text" id="embedTitle" value="TonesinTime" placeholder="Station name" oninput="updateEmbedPreview()">
+            </div>
+            <div class="form-row">
+              <label>Subtitle</label>
+              <input type="text" id="embedSubtitle" value="Live Radio" placeholder="Tagline" oninput="updateEmbedPreview()">
+            </div>
+            <label class="shuffle-toggle" style="margin-top:6px;">
+              <input type="checkbox" id="embedShowVolume" checked onchange="updateEmbedPreview()">
+              <span>Show Volume</span>
+            </label>
+            <label class="shuffle-toggle" style="margin-top:4px;">
+              <input type="checkbox" id="embedShowNowPlaying" checked onchange="updateEmbedPreview()">
+              <span>Show Now Playing</span>
+            </label>
+            <label class="shuffle-toggle" style="margin-top:4px;">
+              <input type="checkbox" id="embedShowBranding" checked onchange="updateEmbedPreview()">
+              <span>Show "Powered by TonesinTime"</span>
+            </label>
+          </div>
+          <div class="section draggable-card" draggable="true" data-card-id="embed-url">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Stream URL</h2>
+            </div>
+            <div class="form-row">
+              <label>URL</label>
+              <input type="text" id="embedStreamUrl" placeholder="http://your-ip:8000/stream" oninput="updateEmbedPreview()">
+            </div>
+            <p class="codec-hint">Enter your public stream URL for the embed</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col embed-preview-col">
+        <div class="embed-preview-container">
+          <iframe id="embedPreviewFrame" class="embed-preview-frame" sandbox="allow-scripts"></iframe>
+        </div>
+        <div class="section" style="margin-top:8px;">
+          <h2>Embed Code <span style="font-size:9px; color:#77767b; text-transform:none; letter-spacing:0;">(click to copy)</span></h2>
+          <div class="embed-code" id="embedDesignerCode" onclick="copyUrl(this)" style="max-height:80px; overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== ANALYTICS TAB ==================== -->
+    <div class="tab-content" id="tabContentAnalytics">
+      <div class="dashboard">
+        <!-- KPI Row -->
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiListeners">0</div>
+            <div class="kpi-label">Listeners</div>
+            <div class="kpi-sub" id="kpiListenersPeak">Peak: 0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiBitrate">0</div>
+            <div class="kpi-label">kbps</div>
+            <div class="kpi-sub" id="kpiCodec">MP3 256k</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiDataSent">0</div>
+            <div class="kpi-label">Data Sent</div>
+            <div class="kpi-sub" id="kpiDropped">0 dropped</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiUptime">--</div>
+            <div class="kpi-label">Uptime</div>
+            <div class="kpi-sub" id="kpiServerStatus">Offline</div>
+          </div>
+        </div>
+
+        <!-- Gauges Row -->
+        <div class="gauge-row">
+          <div class="section gauge-card">
+            <h2>Bitrate</h2>
+            <canvas id="gaugeBitrate" class="gauge-canvas" width="160" height="100"></canvas>
+            <div class="gauge-value" id="gaugeBitrateVal">0 kbps</div>
+          </div>
+          <div class="section gauge-card">
+            <h2>Buffer Health</h2>
+            <canvas id="gaugeBuffer" class="gauge-canvas" width="160" height="100"></canvas>
+            <div class="gauge-value" id="gaugeBufferVal">OK</div>
+          </div>
+          <div class="section gauge-card">
+            <h2>Stream Quality</h2>
+            <canvas id="gaugeQuality" class="gauge-canvas" width="160" height="100"></canvas>
+            <div class="gauge-value" id="gaugeQualityVal">--</div>
+          </div>
+        </div>
+
+        <!-- Bottom Row: Sparkline + Listeners + Recording -->
+        <div class="dashboard-bottom">
+          <div class="section" style="flex:2;">
+            <h2>Bitrate History (60s)</h2>
+            <canvas id="healthSparkline" class="health-sparkline" height="60" style="height:80px;"></canvas>
+          </div>
+          <div class="section" style="flex:1;">
+            <div class="section-header">
+              <h2>Listeners</h2>
+              <span class="listener-badge" id="listenerBadge">0</span>
+            </div>
+            <div class="listener-stats">
+              <div class="health-row">
+                <span class="health-label">Current</span>
+                <span class="health-value" id="lsCurrent">0</span>
+              </div>
+              <div class="health-row">
+                <span class="health-label">Peak</span>
+                <span class="health-value" id="lsPeak">0</span>
+              </div>
+              <div class="health-row">
+                <span class="health-label">Sessions</span>
+                <span class="health-value" id="lsTotal">0</span>
+              </div>
+            </div>
+            <div class="listener-list" id="listenerList">
+              <div class="track-list-empty">No listeners</div>
+            </div>
+          </div>
+          <div class="section" style="flex:1;">
+            <h2>Recording</h2>
+            <div class="recording-controls">
+              <button class="btn btn-small recording-btn" id="recordBtn" onclick="toggleRecording()" style="width:100%;">
+                <span class="rec-dot" id="recDot"></span> Record
+              </button>
+              <div class="recording-status" id="recordingStatus" style="display:none;">
+                <div class="recording-indicator">
+                  <span class="rec-dot-live" id="recDotLive"></span>
+                  <span class="recording-duration" id="recDuration">00:00</span>
+                </div>
+                <div class="recording-filesize" id="recFilesize">0 KB</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;">
+              <p style="font-size:9px;color:var(--text-muted);margin-bottom:2px;">NOW PLAYING</p>
+              <div class="health-value" id="infoNowPlaying" style="color:var(--text-primary);font-size:12px;">--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SETTINGS TAB ==================== -->
+    <div class="tab-content" id="tabContentSettings">
+      <div class="col">
+        <div class="col-scroll" data-drop-zone="settings-left">
+          <!-- Stream Output -->
+          <div class="section draggable-card" draggable="true" data-card-id="live-encoding">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Stream Output</h2>
+            </div>
+            <div class="form-row">
+              <label>Codec</label>
+              <select id="codec">
+                <option value="mp3">MP3 — Universal</option>
+                <option value="aac">AAC — Web (better quality)</option>
+                <option value="opus">Opus — Web (best quality)</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Bitrate</label>
+              <select id="bitrate">
+                <option value="128">128 kbps</option>
+                <option value="192">192 kbps</option>
+                <option value="256" selected>256 kbps (recommended)</option>
+                <option value="320">320 kbps (studio)</option>
+              </select>
+            </div>
+            <p class="codec-hint" id="codecHint">Compatible with all players and web browsers</p>
+            <div class="form-row" style="margin-top:8px;">
+              <label>Port</label>
+              <input type="number" id="port" value="9000" min="1024" max="65535">
+              <label style="min-width:40px; text-align:center;">Mount</label>
+              <input type="text" id="mount" value="/stream">
+            </div>
+            <div class="form-row">
+              <label>Sample Rate</label>
+              <select id="sampleRate" onchange="updateSettingsFromUI()">
+                <option value="44100" selected>44100 Hz (CD)</option>
+                <option value="48000">48000 Hz (Broadcast)</option>
+                <option value="22050">22050 Hz (Low bandwidth)</option>
+              </select>
+            </div>
+          </div>
+          <!-- Station Info -->
+          <div class="section draggable-card" draggable="true" data-card-id="live-station">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Station Info</h2>
+            </div>
+            <div class="form-row">
+              <label>Name</label>
+              <input type="text" id="stationName" value="TonesinTime" placeholder="Station name">
+            </div>
+            <div class="form-row">
+              <label>Now Playing</label>
+              <input type="text" id="nowPlaying" placeholder="Artist - Track">
+            </div>
+            <div class="form-row">
+              <label>Genre</label>
+              <input type="text" id="stationGenre" placeholder="e.g. Electronic, Jazz, Mixed">
+            </div>
+            <div class="form-row">
+              <label>Description</label>
+              <input type="text" id="stationDesc" placeholder="Station description">
+            </div>
+            <div class="form-row">
+              <label>Website</label>
+              <input type="text" id="stationUrl" placeholder="https://yourstation.com">
+            </div>
+          </div>
+          <!-- Metadata -->
+          <div class="section draggable-card" draggable="true" data-card-id="settings-metadata">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Metadata</h2>
+            </div>
+            <div class="form-row">
+              <label>Format</label>
+              <input type="text" id="metadataFormat" value="%artist% - %title%" placeholder="%artist% - %title%">
+            </div>
+            <p class="codec-hint">Variables: %artist%, %title%, %album%, %station%</p>
+            <div class="form-row" style="margin-top:6px;">
+              <label>Delay</label>
+              <input type="number" id="metadataDelay" value="0" min="0" max="30" style="max-width:60px;">
+              <span class="gain-value" style="font-size:9px;">seconds before update</span>
+            </div>
+            <div class="settings-row" style="padding:6px 0; border:none;">
+              <div class="settings-label">
+                <span class="settings-title">Discord Webhook</span>
+                <span class="settings-desc">Post now-playing to Discord channel</span>
+              </div>
+              <div class="settings-control">
+                <label class="schedule-toggle">
+                  <input type="checkbox" id="discordWebhookEnabled" onchange="updateSettingsFromUI()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="form-row" id="discordWebhookRow" style="display:none;">
+              <label>URL</label>
+              <input type="text" id="discordWebhookUrl" placeholder="https://discord.com/api/webhooks/...">
+            </div>
+          </div>
+          <!-- Recording -->
+          <div class="section draggable-card" draggable="true" data-card-id="settings-recording">
+            <div class="section-header">
+              <span class="drag-handle">&#9776;</span>
+              <h2>Recording</h2>
+            </div>
+            <div class="form-row">
+              <label>Format</label>
+              <select id="recordingFormat" onchange="updateSettingsFromUI()">
+                <option value="wav">WAV (lossless, large)</option>
+                <option value="mp3" selected>MP3 (compressed)</option>
+                <option value="flac">FLAC (lossless, compressed)</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Quality</label>
+              <select id="recordingQuality" onchange="updateSettingsFromUI()">
+                <option value="128">128 kbps</option>
+                <option value="192">192 kbps</option>
+                <option value="256" selected>256 kbps</option>
+                <option value="320">320 kbps</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Filename</label>
+              <input type="text" id="recordingFilename" value="broadcast_%date%_%time%" placeholder="broadcast_%date%_%time%">
+            </div>
+            <p class="codec-hint">Variables: %date%, %time%, %station%, %artist%, %title%</p>
+            <div class="settings-row" style="padding:6px 0; border:none;">
+              <div class="settings-label">
+                <span class="settings-title">Auto-split by Hour</span>
+                <span class="settings-desc">Start a new file every hour</span>
+              </div>
+              <div class="settings-control">
+                <label class="schedule-toggle">
+                  <input type="checkbox" id="recordingSplitHour" onchange="updateSettingsFromUI()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="settings-row" style="padding:6px 0; border:none;">
+              <div class="settings-label">
+                <span class="settings-title">Auto-record on Air</span>
+                <span class="settings-desc">Start recording when stream goes live</span>
+              </div>
+              <div class="settings-control">
+                <label class="schedule-toggle">
+                  <input type="checkbox" id="autoRecordOnAir" onchange="updateSettingsFromUI()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="col-scroll" data-drop-zone="settings-right">
+          <!-- General -->
+          <div class="section">
+            <h2>General</h2>
+            <div class="settings-row">
+              <div class="settings-label">
+                <span class="settings-title">Theme</span>
+                <span class="settings-desc">Switch between dark and light appearance</span>
+              </div>
+              <div class="settings-control">
+                <span class="settings-option-label" id="themeLabel">Dark</span>
+                <label class="schedule-toggle">
+                  <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label">
+                <span class="settings-title">Minimize to Tray</span>
+                <span class="settings-desc">Keep running in system tray when closed</span>
+              </div>
+              <div class="settings-control">
+                <label class="schedule-toggle">
+                  <input type="checkbox" id="minimizeToTrayToggle" checked onchange="updateSettingsFromUI()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label">
+                <span class="settings-title">Web Sharing</span>
+                <span class="settings-desc">HTTPS tunnel for website embeds</span>
+              </div>
+              <div class="settings-control">
+                <label class="schedule-toggle">
+                  <input type="checkbox" id="webSharingToggle" onchange="updateSettingsFromUI()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <!-- Network & Reliability -->
+          <div class="section">
+            <h2>Network</h2>
+            <div class="form-row">
+              <label>Buffer Size</label>
+              <select id="bufferSize" onchange="updateSettingsFromUI()">
+                <option value="1024">1024 (low latency)</option>
+                <option value="2048" selected>2048 (balanced)</option>
+                <option value="4096">4096 (stable)</option>
+                <option value="8192">8192 (high latency)</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Reconnect</label>
+              <input type="number" id="reconnectAttempts" value="5" min="0" max="50" style="max-width:60px;">
+              <span class="gain-value" style="font-size:9px;">attempts</span>
+            </div>
+            <div class="form-row">
+              <label>Retry Delay</label>
+              <input type="number" id="reconnectDelay" value="3" min="1" max="30" style="max-width:60px;">
+              <span class="gain-value" style="font-size:9px;">seconds</span>
+            </div>
+          </div>
+          <!-- Failover -->
+          <div class="section">
+            <h2>Failover</h2>
+            <div class="settings-row">
+              <div class="settings-label">
+                <span class="settings-title">Auto-restart on Failure</span>
+                <span class="settings-desc">Restart stream if encoder crashes</span>
+              </div>
+              <div class="settings-control">
+                <label class="schedule-toggle">
+                  <input type="checkbox" id="autoRestartToggle" checked onchange="updateSettingsFromUI()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label">
+                <span class="settings-title">Dead Air Fallback</span>
+                <span class="settings-desc">Play a file when silence is detected</span>
+              </div>
+              <div class="settings-control">
+                <label class="schedule-toggle">
+                  <input type="checkbox" id="fallbackEnabled" onchange="updateSettingsFromUI()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="form-row" id="fallbackFileRow">
+              <label>Fallback</label>
+              <input type="text" id="fallbackFile" placeholder="No file selected" readonly style="flex:1; cursor:pointer;" onclick="selectFallbackFile()">
+              <button class="btn btn-small" onclick="selectFallbackFile()">Browse</button>
+            </div>
+          </div>
+          <!-- Notifications -->
+          <div class="section">
+            <h2>Notifications</h2>
+            <div class="settings-row">
+              <div class="settings-label">
+                <span class="settings-title">Enable Notifications</span>
+              </div>
+              <div class="settings-control">
+                <label class="schedule-toggle">
+                  <input type="checkbox" id="notificationsToggle" checked onchange="updateSettingsFromUI()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="settings-row settings-sub">
+              <div class="settings-label"><span class="settings-title">Listener Connect</span></div>
+              <div class="settings-control"><label class="schedule-toggle"><input type="checkbox" id="notifyListenerToggle" checked onchange="updateSettingsFromUI()"><span class="toggle-slider"></span></label></div>
+            </div>
+            <div class="settings-row settings-sub">
+              <div class="settings-label"><span class="settings-title">Stream Status</span></div>
+              <div class="settings-control"><label class="schedule-toggle"><input type="checkbox" id="notifyStreamToggle" checked onchange="updateSettingsFromUI()"><span class="toggle-slider"></span></label></div>
+            </div>
+            <div class="settings-row settings-sub">
+              <div class="settings-label"><span class="settings-title">Recording Status</span></div>
+              <div class="settings-control"><label class="schedule-toggle"><input type="checkbox" id="notifyRecordingToggle" checked onchange="updateSettingsFromUI()"><span class="toggle-slider"></span></label></div>
+            </div>
+            <div class="settings-row settings-sub">
+              <div class="settings-label"><span class="settings-title">Dead Air Alert</span></div>
+              <div class="settings-control"><label class="schedule-toggle"><input type="checkbox" id="notifyDeadAirToggle" checked onchange="updateSettingsFromUI()"><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
+          <!-- Audio Processing Presets -->
+          <div class="section">
+            <h2>Processing Presets</h2>
+            <div class="form-row">
+              <label>Preset</label>
+              <select id="processingPreset" onchange="applyProcessingPreset(this.value)">
+                <option value="none">None (manual)</option>
+                <option value="radio-loud">Radio Loud</option>
+                <option value="radio-clean">Radio Clean</option>
+                <option value="podcast">Podcast / Voice</option>
+                <option value="music">Music (gentle)</option>
+                <option value="dj-set">DJ Set (heavy)</option>
+              </select>
+            </div>
+            <p class="codec-hint" id="presetDesc">No processing preset applied</p>
+          </div>
+          <!-- Keyboard Shortcuts -->
+          <div class="section">
+            <h2>Keyboard Shortcuts</h2>
+            <div class="shortcut-list">
+              <div class="shortcut-row">
+                <span class="shortcut-action">Start / Stop Stream</span>
+                <kbd class="shortcut-key shortcut-mod">Ctrl+Shift+S</kbd>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-action">Start / Stop Recording</span>
+                <kbd class="shortcut-key shortcut-mod">Ctrl+Shift+R</kbd>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-action">Mute / Unmute</span>
+                <kbd class="shortcut-key shortcut-mod">Ctrl+Shift+M</kbd>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-action">Mic Live Toggle</span>
+                <kbd class="shortcut-key shortcut-mod">Ctrl+Shift+L</kbd>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-action">Dump Audio</span>
+                <kbd class="shortcut-key shortcut-mod">Ctrl+Shift+D</kbd>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-action">Skip Track</span>
+                <kbd class="shortcut-key shortcut-mod">Ctrl+Shift+N</kbd>
+              </div>
+            </div>
+          </div>
+          <!-- Import / Export / About -->
+          <div class="section">
+            <h2>Data</h2>
+            <div class="form-row" style="gap:6px;">
+              <button class="btn btn-small" style="flex:1;" onclick="exportAllSettings()">Export Settings</button>
+              <button class="btn btn-small" style="flex:1;" onclick="importAllSettings()">Import Settings</button>
+              <button class="btn btn-small" style="flex:1;" onclick="resetAllSettings()">Reset Defaults</button>
+            </div>
+          </div>
+          <div class="section">
+            <h2>About</h2>
+            <div class="settings-row" style="border:none;">
+              <div class="settings-label">
+                <span class="settings-title">TonesinTime Broadcaster</span>
+                <span class="settings-desc" id="aboutVersion">v1.0.0</span>
+              </div>
+            </div>
+            <div class="settings-row" style="border:none;">
+              <div class="settings-label">
+                <span class="settings-title">FFmpeg</span>
+                <span class="settings-desc" id="aboutFfmpeg">Checking...</span>
+              </div>
+            </div>
+            <div class="settings-row" style="border:none;">
+              <div class="settings-label">
+                <span class="settings-title">Platform</span>
+                <span class="settings-desc" id="aboutPlatform">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
