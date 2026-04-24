@@ -113,6 +113,22 @@ See [`cloud/README.md`](cloud/README.md) for setup instructions.
 - **Web Audio API** -- real-time analysis and effects
 - **lamejs** -- MP3 encoding fallback
 
+## Roadmap
+
+These are planned enhancements open for contribution. Pick one up or propose your own.
+
+- [ ] **Multi-stream Output** -- broadcast to multiple Icecast/Shoutcast endpoints simultaneously from a single session
+- [ ] **Plugin System** -- loadable audio effect plugins (VST/AU bridge or JS-based) so users can extend the FX chain
+- [ ] **Mobile Companion App** -- lightweight remote control for start/stop, track skip, and live stats from your phone
+- [ ] **Scheduled Recordings** -- timer-based recording with calendar integration for unattended capture
+- [ ] **Collaborative DJ Handoff** -- allow multiple DJs to queue tracks and hand off the live stream without downtime
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+Whether it's a bug fix, new feature, docs improvement, or a roadmap item above -- all PRs are appreciated.
+
 ## License
 
 MIT -- see [LICENSE](LICENSE) for details.
